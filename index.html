@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GTA VI – The ultimate fan site covering Vice City, characters, locations, and media." />
+  <title>GTA VI – The Next Chapter</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts: Bebas Neue (display) + Inter (body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════
+       NAVBAR  –  sticky, 6 links (≥ 4 required)
+       ══════════════════════════════════════════════ -->
+  <nav class="navbar navbar-expand-lg sticky-top" id="mainNavbar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <span class="brand-gta">GTA</span><span class="brand-vi">VI</span>
+      </a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#navMenu"
+              aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link"        href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link"        href="#gallery">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link"        href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link"        href="world.html">World</a></li>
+          <li class="nav-item"><a class="nav-link nav-cta" href="media.html">Media</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════
+       HERO
+       ══════════════════════════════════════════════ -->
+  <section class="hero-section" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-scanlines"></div>
+    <div class="hero-content container">
+      <div class="hero-eyebrow">Rockstar Games &nbsp;·&nbsp; 2025</div>
+      <h1 class="hero-title">GRAND THEFT AUTO</h1>
+      <div class="hero-roman" aria-label="Six">VI</div>
+      <p class="hero-tagline">
+        Return to Vice City.<br/>
+        The biggest open world ever made.
+      </p>
+      <div class="hero-actions">
+        <a href="world.html" class="btn-primary-custom">Explore the World</a>
+        <a href="media.html" class="btn-outline-custom">Watch Trailer</a>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-bar"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       FEATURES
+       ══════════════════════════════════════════════ -->
+  <section class="features-section section-pad" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">What Awaits You</h2>
+        <p class="section-sub">The most ambitious Rockstar game ever crafted</p>
+      </div>
+      <!-- Populated by FeaturesSection class in home.js -->
+      <div class="features-grid" id="featuresGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       GALLERY
+       UNIQUE UI REQUIREMENT – Peter Feghali:
+       Responsive 3-column layout using Flexbox.
+       The .gallery-grid uses display:flex + flex-wrap.
+       Each item: flex: 1 1 calc(33.333% - 14px) → 3 cols.
+       Tablet (≤992px) → 2 cols.  Mobile (≤768px) → 1 col.
+       ══════════════════════════════════════════════ -->
+  <section class="gallery-section section-pad" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Screenshot Gallery</h2>
+        <p class="section-sub">A visual journey through the world of GTA VI</p>
+      </div>
+      <!-- Filter buttons – populated by Gallery class -->
+      <div class="gallery-filters" id="galleryFilters"></div>
+      <!-- 3-Column Flexbox grid – populated by Gallery class -->
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       STATS COUNTER
+       ══════════════════════════════════════════════ -->
+  <section class="stats-section">
+    <div class="container">
+      <!-- Populated by StatsSection class -->
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       ABOUT
+       ══════════════════════════════════════════════ -->
+  <section class="about-section section-pad" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text">
+          <h2 class="section-title">About GTA VI</h2>
+          <p>Grand Theft Auto VI is the upcoming open-world action-adventure game by Rockstar
+             Games. Set in the fictional state of Leonida — inspired by Florida — the game
+             returns players to the iconic neon-lit streets of Vice City for the first time
+             since 2006.</p>
+          <p>For the first time in the mainline series, players take on the role of a female
+             protagonist: Lucia, alongside her partner Jason. Their story of survival and
+             ambition plays out across a sprawling open world filled with secrets, heists,
+             and chaos at every turn.</p>
+          <p>GTA VI is slated for release in 2025 on PS5 and Xbox Series X|S, with a PC
+             version to follow.</p>
+          <a href="world.html" class="btn-primary-custom mt-4 d-inline-block">
+            Meet the Characters &rarr;
+          </a>
+        </div>
+        <!-- Game info card – populated by AboutSection class -->
+        <div class="about-card">
+          <div class="game-info-card" id="gameInfoCard"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       FOOTER
+       ══════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="brand-gta">GTA</span><span class="brand-vi">VI</span>
+          </div>
+          <p>A fan-made tribute to the most anticipated game in history.
+             Not affiliated with Rockstar Games.</p>
+        </div>
+        <div class="footer-links-col">
+          <h5>Navigate</h5>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="world.html">World</a></li>
+            <li><a href="media.html">Media</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h5>External</h5>
+          <ul>
+            <li><a href="https://www.rockstargames.com/VI" target="_blank" rel="noopener">Rockstar Games</a></li>
+            <li><a href="https://rawg.io" target="_blank" rel="noopener">RAWG.io</a></li>
+            <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>GTA VI and all related trademarks &copy; Rockstar Games / Take-Two Interactive.
+           Fan-made website for educational purposes.</p>
+        <p>Built by <strong>Peter Feghali</strong> &nbsp;&middot;&nbsp;
+           Lebanese University – Full Stack Development 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Shared classes (Navbar, CounterAnimation, ScrollReveal) -->
+  <script src="js/app.js"></script>
+  <!-- Home-page classes (FeaturesSection, Gallery, StatsSection, AboutSection) -->
+  <script src="js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Explore the world of GTA VI – characters, locations, and the story of Leonida." />
+  <title>The World – GTA VI</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════
+       NAVBAR
+       ══════════════════════════════════════════════ -->
+  <nav class="navbar navbar-expand-lg sticky-top" id="mainNavbar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <span class="brand-gta">GTA</span><span class="brand-vi">VI</span>
+      </a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#navMenu"
+              aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+          <li class="nav-item"><a class="nav-link"         href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link"         href="index.html#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link"         href="index.html#gallery">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link"         href="index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link active"  href="world.html">World</a></li>
+          <li class="nav-item"><a class="nav-link nav-cta" href="media.html">Media</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE HERO
+       ══════════════════════════════════════════════ -->
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="container page-hero-content">
+      <div class="hero-eyebrow">Explore</div>
+      <h1 class="page-hero-title">The World of GTA VI</h1>
+      <p>Meet the protagonists, discover the locations, and uncover the lore</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       CHARACTERS
+       ══════════════════════════════════════════════ -->
+  <section class="section-pad" id="characters">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Characters</h2>
+        <p class="section-sub">The players in Leonida's criminal underworld</p>
+      </div>
+      <!-- Populated by CharactersSection class in world.js -->
+      <div class="characters-grid" id="charactersGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       LOCATIONS
+       ══════════════════════════════════════════════ -->
+  <section class="section-pad bg-dark-alt" id="locations">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Locations</h2>
+        <p class="section-sub">From neon boulevards to untamed wilderness</p>
+      </div>
+      <!-- Populated by LocationsSection class in world.js -->
+      <div class="locations-grid" id="locationsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       STORY TIMELINE
+       ══════════════════════════════════════════════ -->
+  <section class="section-pad" id="timeline">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">The Story So Far</h2>
+        <p class="section-sub">Key milestones in the world of GTA VI</p>
+      </div>
+      <!-- Populated by Timeline class in world.js -->
+      <div class="timeline-wrap" id="timelineContainer"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       FOOTER
+       ══════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="brand-gta">GTA</span><span class="brand-vi">VI</span>
+          </div>
+          <p>A fan-made tribute to the most anticipated game in history.</p>
+        </div>
+        <div class="footer-links-col">
+          <h5>Navigate</h5>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="world.html">World</a></li>
+            <li><a href="media.html">Media</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h5>External</h5>
+          <ul>
+            <li><a href="https://www.rockstargames.com/VI" target="_blank" rel="noopener">Rockstar Games</a></li>
+            <li><a href="https://rawg.io" target="_blank" rel="noopener">RAWG.io</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>GTA VI &copy; Rockstar Games. Fan-made educational website.</p>
+        <p>Built by <strong>Peter Feghali</strong> &nbsp;&middot;&nbsp; Lebanese University 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/world.js"></script>
+</body>
+</html>
