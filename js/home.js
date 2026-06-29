@@ -84,17 +84,16 @@ class FeaturesSection {
    Clicking opens the Bootstrap lightbox modal.
    ───────────────────────────────────────────────────────────── */
 class GalleryItem {
-  constructor({ id, title, description, category, gradient, icon }) {
+  constructor({ id, title, description, category, image, gradient }) {
     this.id          = id;
     this.title       = title;
     this.description = description;
     this.category    = category;
+    this.image       = image;
     this.gradient    = gradient;
-    this.icon        = icon;
   }
 
   render(delay = 0) {
-    // data-* attributes are read by Gallery._openModal()
     return `
       <div class="gallery-item"
            data-category="${this.category}"
@@ -102,13 +101,18 @@ class GalleryItem {
            data-title="${this.title}"
            data-description="${this.description}"
            data-gradient="${this.gradient}"
-           data-icon="${this.icon}"
+           data-image="${this.image}"
            style="animation-delay:${delay}s;cursor:pointer"
            tabindex="0"
            role="button"
            aria-label="View ${this.title}">
-        <div class="gallery-thumb" style="background:${this.gradient}" aria-hidden="true">
-          <i class="${this.icon}"></i>
+        <div class="gallery-thumb" style="background:${this.gradient}">
+          <img
+            src="${this.image}"
+            alt="${this.title}"
+            loading="lazy"
+            onerror="this.style.display='none'"
+          />
         </div>
         <div class="gallery-overlay">
           <h4>${this.title}</h4>
@@ -134,24 +138,25 @@ class Gallery {
     this.activeFilter = 'all';
     this.modal        = null;  // Bootstrap modal instance
 
-    // 16 curated GTA VI gallery items
+    // 16 curated GTA VI gallery items – each with a real photo + gradient fallback
+    // Images sourced from Unsplash (free license). onerror shows gradient fallback.
     this.items = [
-      new GalleryItem({ id: 1,  title: 'Neon Vice City Strip',    description: 'The iconic boulevard at night, bathed in electric pink and purple neon light stretching to the horizon.',   category: 'city',       gradient: 'linear-gradient(135deg,#1a0533,#6b1069,#e91e8c)', icon: 'fas fa-city' }),
-      new GalleryItem({ id: 2,  title: 'Vice City Beach Sunset',  description: 'Golden-hour waves rolling onto the shores of Vice City as the sun melts into the ocean.',                  category: 'city',       gradient: 'linear-gradient(135deg,#7c2d00,#c73e0a,#fa8c16)', icon: 'fas fa-umbrella-beach' }),
-      new GalleryItem({ id: 3,  title: 'Downtown Skyline',        description: 'Towering glass skyscrapers pierce the night sky, their reflections shimmering in the bay below.',           category: 'city',       gradient: 'linear-gradient(135deg,#001433,#003a8c,#00d4ff)', icon: 'fas fa-building' }),
-      new GalleryItem({ id: 4,  title: 'Vice City Harbor',        description: 'Luxury yachts and cargo ships share the moonlit bay, a collision of wealth and grit.',                     category: 'city',       gradient: 'linear-gradient(135deg,#001d3d,#003566,#0077b6)', icon: 'fas fa-anchor' }),
-      new GalleryItem({ id: 5,  title: 'Night Club District',     description: 'Vice City\'s entertainment zone pulses long after midnight — music, lights, and danger around every corner.',category: 'city',       gradient: 'linear-gradient(135deg,#0d0020,#4b0082,#9900cc)', icon: 'fas fa-music' }),
-      new GalleryItem({ id: 6,  title: 'Lucia Caminos',          description: 'The first playable female lead in the mainline GTA series. Tough, resourceful, and determined to survive.', category: 'characters', gradient: 'linear-gradient(135deg,#1a0010,#7c1a35,#c2185b)', icon: 'fas fa-person-dress' }),
-      new GalleryItem({ id: 7,  title: 'Jason Duval',            description: 'Lucia\'s partner and co-protagonist. A man shaped by Leonida\'s brutal streets, loyal to those he trusts.',  category: 'characters', gradient: 'linear-gradient(135deg,#0d1117,#1f2937,#374151)', icon: 'fas fa-person' }),
-      new GalleryItem({ id: 8,  title: 'Lucia & Jason',          description: 'Two protagonists. One unstoppable criminal force. Their story is the heart of GTA VI.',                     category: 'characters', gradient: 'linear-gradient(135deg,#1a0533,#52005e,#c2185b)', icon: 'fas fa-users' }),
-      new GalleryItem({ id: 9,  title: 'Boobie Ike',             description: 'Vice City\'s most flamboyant and feared crime lord. His outrageous style masks a calculating criminal mind.',category: 'characters', gradient: 'linear-gradient(135deg,#1a0033,#4b0082,#7b1fa2)', icon: 'fas fa-crown' }),
-      new GalleryItem({ id: 10, title: 'Everglades at Dawn',     description: 'Misty swamplands before the sun rises over Leonida — alligators, airboats, and hidden criminal hideouts.', category: 'nature',     gradient: 'linear-gradient(135deg,#002400,#1a4a1a,#52c41a)', icon: 'fas fa-tree' }),
-      new GalleryItem({ id: 11, title: 'Tropical Coastline',     description: 'Crystal-clear turquoise waters lap against white sand beaches along the Leonida Keys coastline.',           category: 'nature',     gradient: 'linear-gradient(135deg,#003049,#006994,#00b4d8)', icon: 'fas fa-water' }),
-      new GalleryItem({ id: 12, title: 'Leonida Keys Islands',   description: 'A tropical archipelago south of Vice City — paradise on the surface, with criminal operations beneath.',   category: 'nature',     gradient: 'linear-gradient(135deg,#002a4a,#00688b,#36cfc9)', icon: 'fas fa-mountain-sun' }),
-      new GalleryItem({ id: 13, title: 'Countryside at Dusk',    description: 'Sun-baked flatlands, orange groves, and forgotten highways stretch to the Leonida horizon.',               category: 'nature',     gradient: 'linear-gradient(135deg,#3b2500,#7c5200,#d4a017)', icon: 'fas fa-sun' }),
-      new GalleryItem({ id: 14, title: 'Exotic Supercar',        description: 'Next-generation vehicle physics push the limits of speed through Vice City\'s neon-lit streets.',           category: 'vehicles',   gradient: 'linear-gradient(135deg,#1a0000,#7c0000,#f5222d)', icon: 'fas fa-car-side' }),
-      new GalleryItem({ id: 15, title: 'Police Helicopter Chase',description: 'Five-star wanted level — every helicopter, cruiser, and NOOSE van in Leonida is on your tail.',            category: 'vehicles',   gradient: 'linear-gradient(135deg,#001133,#003399,#004fff)', icon: 'fas fa-helicopter' }),
-      new GalleryItem({ id: 16, title: 'Swamp Airboat',          description: 'Navigate the Everglades in a fan-driven airboat — the fastest way through Leonida\'s wetlands.',           category: 'vehicles',   gradient: 'linear-gradient(135deg,#002200,#1a4a00,#389e0d)', icon: 'fas fa-ship' }),
+      new GalleryItem({ id: 1,  title: 'Neon Vice City Strip',    description: 'The iconic boulevard at night, bathed in electric pink and purple neon light stretching to the horizon.',     category: 'city',       image: 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#1a0533,#6b1069,#e91e8c)' }),
+      new GalleryItem({ id: 2,  title: 'Vice City Beach Sunset',  description: 'Golden-hour waves rolling onto the shores of Vice City as the sun melts into the ocean.',                    category: 'city',       image: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#7c2d00,#c73e0a,#fa8c16)' }),
+      new GalleryItem({ id: 3,  title: 'Downtown Skyline',        description: 'Towering glass skyscrapers pierce the night sky, their reflections shimmering in the bay below.',             category: 'city',       image: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#001433,#003a8c,#00d4ff)' }),
+      new GalleryItem({ id: 4,  title: 'Vice City Harbor',        description: 'Luxury yachts and cargo ships share the moonlit bay, a collision of old money and new crime.',                category: 'city',       image: 'https://images.unsplash.com/photo-1510065228573-c0a36af3f7b3?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#001d3d,#003566,#0077b6)' }),
+      new GalleryItem({ id: 5,  title: 'Night Club District',     description: 'Vice City\'s entertainment zone pulses long after midnight — music, lights, and danger around every corner.',  category: 'city',       image: 'https://images.unsplash.com/photo-1524666043080-bf06f88dcc66?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#0d0020,#4b0082,#9900cc)' }),
+      new GalleryItem({ id: 6,  title: 'Lucia Caminos',           description: 'The first playable female lead in the mainline GTA series. Tough, resourceful, and determined to survive.',   category: 'characters', image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#1a0010,#7c1a35,#c2185b)' }),
+      new GalleryItem({ id: 7,  title: 'Jason Duval',             description: 'Lucia\'s partner and co-protagonist. Shaped by Leonida\'s brutal streets, loyal to those he trusts.',          category: 'characters', image: 'https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#0d1117,#1f2937,#374151)' }),
+      new GalleryItem({ id: 8,  title: 'Lucia & Jason',           description: 'Two protagonists. One unstoppable criminal force. Their bond is the heart of GTA VI\'s story.',               category: 'characters', image: 'https://images.unsplash.com/photo-1516914589923-f105f1535f88?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#1a0533,#52005e,#c2185b)' }),
+      new GalleryItem({ id: 9,  title: 'Boobie Ike',              description: 'Vice City\'s most flamboyant and feared crime lord. His outrageous style masks a calculating criminal mind.',  category: 'characters', image: 'https://images.unsplash.com/photo-1500520198921-6d4704ab3ad7?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#1a0033,#4b0082,#7b1fa2)' }),
+      new GalleryItem({ id: 10, title: 'Everglades at Dawn',      description: 'Misty swamplands before the sun rises over Leonida — alligators, airboats, and hidden criminal hideouts.',   category: 'nature',     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#002400,#1a4a1a,#52c41a)' }),
+      new GalleryItem({ id: 11, title: 'Tropical Coastline',      description: 'Crystal-clear turquoise waters lap against white sand beaches along the Leonida Keys coastline.',             category: 'nature',     image: 'https://images.unsplash.com/photo-1535498730771-e735b998cd64?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#003049,#006994,#00b4d8)' }),
+      new GalleryItem({ id: 12, title: 'Leonida Keys Islands',    description: 'A tropical archipelago south of Vice City — paradise on the surface, with criminal operations beneath.',     category: 'nature',     image: 'https://images.unsplash.com/photo-1511300636408-a63a89df3482?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#002a4a,#00688b,#36cfc9)' }),
+      new GalleryItem({ id: 13, title: 'Countryside at Dusk',     description: 'Sun-baked flatlands, orange groves, and forgotten highways stretching to the Leonida horizon.',               category: 'nature',     image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#3b2500,#7c5200,#d4a017)' }),
+      new GalleryItem({ id: 14, title: 'Exotic Supercar',         description: 'Next-generation vehicle physics push the limits of speed through Vice City\'s neon-lit streets at night.',   category: 'vehicles',   image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#1a0000,#7c0000,#f5222d)' }),
+      new GalleryItem({ id: 15, title: 'Police Helicopter Chase', description: 'Five-star wanted level — every helicopter, cruiser, and NOOSE van in Leonida is on your tail.',              category: 'vehicles',   image: 'https://images.unsplash.com/photo-1506905925-346e0c2e8de5?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#001133,#003399,#004fff)' }),
+      new GalleryItem({ id: 16, title: 'Swamp Airboat',           description: 'Navigate the Everglades in a fan-driven airboat — the fastest way through Leonida\'s wild wetlands.',         category: 'vehicles',   image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80', gradient: 'linear-gradient(135deg,#002200,#1a4a00,#389e0d)' }),
     ];
 
     this.categories = ['all', 'city', 'characters', 'nature', 'vehicles'];
@@ -174,7 +179,15 @@ class Gallery {
 
     const thumb = document.getElementById('modalThumb');
     thumb.style.background = item.gradient;
-    thumb.innerHTML = `<i class="${item.icon}" style="font-size:6rem;color:rgba(255,255,255,0.2)"></i>`;
+    // Show real image in modal, fallback to gradient
+    thumb.innerHTML = `
+      <img
+        src="${item.image}"
+        alt="${item.title}"
+        style="width:100%;height:100%;object-fit:cover;border-radius:8px"
+        onerror="this.style.display='none'"
+      />
+    `;
 
     if (this.modal) this.modal.show();
   }
@@ -189,7 +202,7 @@ class Gallery {
           description: el.dataset.description,
           category:    el.dataset.category,
           gradient:    el.dataset.gradient,
-          icon:        el.dataset.icon,
+          image:       el.dataset.image,
         };
         this._openModal(item);
       };

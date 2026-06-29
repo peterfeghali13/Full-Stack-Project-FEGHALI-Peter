@@ -227,23 +227,10 @@
   <script src="js/app.js"></script>
   <script src="js/media.js"></script>
 
-  <!-- Click-to-play trailer logic -->
+  <!-- Trailer click → opens YouTube in new tab -->
   <script>
     function playTrailer(num, videoId) {
-      const thumb = document.getElementById('trailerThumb' + num);
-      const frame = document.getElementById('trailerFrame' + num);
-      if (!thumb || !frame) return;
-      // Build iframe
-      frame.innerHTML = `
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
-          title="GTA VI Trailer ${num}"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>`;
-      thumb.style.display = 'none';
-      frame.classList.remove('hidden');
+      window.open('https://www.youtube.com/watch?v=' + videoId, '_blank');
     }
   </script>
 </body>
