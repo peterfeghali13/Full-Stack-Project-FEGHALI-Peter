@@ -3,7 +3,7 @@
 ### Full Stack Development – Final Project 2026
 
 **Student:** Peter Feghali   
-
+**Live URL:** *https://peterfeghali13.github.io/Full-Stack-Project-FEGHALI-Peter/*  
 
 ---
 
