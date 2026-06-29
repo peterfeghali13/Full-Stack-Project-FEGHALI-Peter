@@ -1,19 +1,19 @@
 'use strict';
 
-/* API CONFIGURATION  */
-const API_KEY     = 'h4jr2y3ptgswNUFvtqMf0N4KLz5EMAhQ5PBHvbAM';
+/* ── API CONFIGURATION ──────────────────────────────────────── */
+const API_KEY     = 'h4jr2y3ptgswNUFvtqMf0N4KLz5EMAhQ5PBHvbAM';  // ← paste your key here
 const BASE_URL    = 'https://api.api-ninjas.com/v1/games';
 const SEARCH_TERM = 'grand theft auto';
 const PAGE_SIZE   = 9;   // results shown per page
 
-/* 
+/* ─────────────────────────────────────────────────────────────
    GameCard
    Wraps one API Ninjas game object and renders a styled card.
 
    API Ninjas games response shape:
      { name, platform, genre, score, url }
      score  = Metacritic score  0–100
-    */
+   ───────────────────────────────────────────────────────────── */
 class GameCard {
   constructor(rawGame) {
     this.name     = rawGame.name     || 'Unknown Title';
@@ -122,14 +122,14 @@ class GameCard {
   }
 }
 
-/* 
+/* ─────────────────────────────────────────────────────────────
    ApiManager
    Handles all API Ninjas fetch calls.
    API Ninjas uses page-based pagination (0, 1, 2 …).
    Each page returns up to 10 results.
    There is no total count — we detect end-of-results when the
    returned array is empty.
-   */
+   ───────────────────────────────────────────────────────────── */
 class ApiManager {
   constructor() {
     this.currentPage  = 0;
@@ -176,11 +176,11 @@ class ApiManager {
   }
 }
 
-/* 
+/* ─────────────────────────────────────────────────────────────
    SearchFilter
    Client-side search, sort, and platform filter applied
    to the current page of API results.
-   */
+   ───────────────────────────────────────────────────────────── */
 class SearchFilter {
   constructor(games) {
     this.allGames = games;
@@ -232,14 +232,14 @@ class SearchFilter {
   }
 }
 
-/*
+/* ─────────────────────────────────────────────────────────────
    MediaPage
    Orchestrates the full media page:
      · loading / error / empty states
      · API fetch + render on page change
      · client-side search, sort, platform filter
      · pagination (prev / next using API page parameter)
-   */
+   ───────────────────────────────────────────────────────────── */
 class MediaPage {
   constructor() {
     this.api         = new ApiManager();
@@ -268,7 +268,7 @@ class MediaPage {
     this._bindEvents();
   }
 
-  /* Event listeners */
+  /* ── Event listeners ───────────────────────────────────────── */
   _bindEvents() {
     let debounce;
     this._el.search?.addEventListener('input', () => {
@@ -284,7 +284,7 @@ class MediaPage {
     this._el.nextBtn?.addEventListener('click', () => this._load(this.apiPage + 1));
   }
 
-  /* Client-side filter (no extra API call) */
+  /* ── Client-side filter (no extra API call) ─────────────────── */
   _applyClientFilter() {
     if (!this.filter) return;
     this.filter.update({
@@ -295,7 +295,7 @@ class MediaPage {
     this._renderCards(this.filter.apply());
   }
 
-  /* UI state machine */
+  /* ── UI state machine ───────────────────────────────────────── */
   _setState(state) {
     const { loading, error, empty, grid, resultsBar, pagination } = this._el;
 
@@ -327,7 +327,7 @@ class MediaPage {
     }
   }
 
-  /* Render game cards into the grid */
+  /* ── Render game cards into the grid ───────────────────────── */
   _renderCards(games) {
     if (!games.length) {
       this._setState('empty');
@@ -346,7 +346,7 @@ class MediaPage {
     new ScrollReveal('.game-card');
   }
 
-  /* Pagination controls  */
+  /* ── Pagination controls ────────────────────────────────────── */
   _updatePagination() {
     const displayPage = this.apiPage + 1;  // show 1-based to user
     if (this._el.indicator) {
@@ -356,7 +356,7 @@ class MediaPage {
     if (this._el.nextBtn) this._el.nextBtn.disabled = !this.api.hasMore;
   }
 
-  /* Fetch one API page */
+  /* ── Fetch one API page ─────────────────────────────────────── */
   async _load(page = 0) {
     if (page < 0) return;
     this.apiPage = page;
@@ -396,9 +396,9 @@ class MediaPage {
   }
 }
 
-/*
+/* ─────────────────────────────────────────────────────────────
    Boot – media page initialisation
-   */
+   ───────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   new MediaPage().init();
 });

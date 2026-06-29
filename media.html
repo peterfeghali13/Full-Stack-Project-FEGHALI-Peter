@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="GTA VI Media Hub – official trailer, and GTA series game browser powered by the RAWG.io API." />
+  <meta name="description" content="GTA VI Media Hub – official trailers and GTA series game browser powered by API Ninjas." />
   <title>Media Hub – GTA VI</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -13,9 +13,7 @@
 </head>
 <body>
 
-  <!-- ══════════════════════════════════════════════
-       NAVBAR
-       ══════════════════════════════════════════════ -->
+  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg sticky-top" id="mainNavbar">
     <div class="container">
       <a class="navbar-brand" href="index.html">
@@ -28,99 +26,144 @@
       </button>
       <div class="collapse navbar-collapse" id="navMenu">
         <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
-          <li class="nav-item"><a class="nav-link"              href="index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link"              href="index.html#features">Features</a></li>
-          <li class="nav-item"><a class="nav-link"              href="index.html#gallery">Gallery</a></li>
-          <li class="nav-item"><a class="nav-link"              href="index.html#about">About</a></li>
-          <li class="nav-item"><a class="nav-link"              href="world.html">World</a></li>
+          <li class="nav-item"><a class="nav-link"               href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link"               href="index.html#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link"               href="index.html#gallery">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link"               href="index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link"               href="world.html">World</a></li>
           <li class="nav-item"><a class="nav-link nav-cta active" href="media.html">Media</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- ══════════════════════════════════════════════
-       PAGE HERO
-       ══════════════════════════════════════════════ -->
+  <!-- PAGE HERO -->
   <section class="page-hero">
     <div class="page-hero-bg"></div>
     <div class="page-hero-overlay"></div>
     <div class="container page-hero-content">
       <div class="hero-eyebrow">Media &amp; Coverage</div>
       <h1 class="page-hero-title">Media Hub</h1>
-      <p>Trailers, game data, and everything GTA – powered by RAWG.io</p>
+      <p>Official trailers, game data, and everything GTA VI</p>
     </div>
   </section>
 
   <!-- ══════════════════════════════════════════════
-       OFFICIAL TRAILER  (YouTube embed)
+       TRAILERS  –  both Trailer 1 & Trailer 2
+       Click-to-play: thumbnail shown first,
+       clicking loads the iframe OR opens YouTube.
        ══════════════════════════════════════════════ -->
-  <section class="section-pad" id="trailer">
+  <section class="section-pad" id="trailers">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Official Trailer</h2>
-        <p class="section-sub">The announcement that broke the internet — 90 million views in 24 hours</p>
+        <h2 class="section-title">Official Trailers</h2>
+        <p class="section-sub">Every official reveal from Rockstar Games</p>
       </div>
-      <div class="trailer-wrapper">
-        <iframe
-          src="https://www.youtube.com/embed/QdBZExpgErs"
-          title="GTA VI – Official Trailer 1"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+
+      <div class="trailers-grid">
+
+        <!-- TRAILER 1 -->
+        <div class="trailer-card" id="trailerCard1">
+          <div class="trailer-thumb" id="trailerThumb1">
+            <img
+              src="https://img.youtube.com/vi/QdBZY2fkU-0/maxresdefault.jpg"
+              alt="GTA VI Trailer 1 thumbnail"
+              onerror="this.src='https://img.youtube.com/vi/QdBZY2fkU-0/hqdefault.jpg'"
+            />
+            <div class="trailer-overlay">
+              <button class="play-btn" onclick="playTrailer('1','QdBZY2fkU-0')" aria-label="Play Trailer 1">
+                <i class="fas fa-play"></i>
+              </button>
+            </div>
+          </div>
+          <div class="trailer-iframe-wrap hidden" id="trailerFrame1">
+            <!-- iframe injected by playTrailer() -->
+          </div>
+          <div class="trailer-meta">
+            <span class="trailer-badge">Trailer 1</span>
+            <div class="trailer-info">
+              <h3>Grand Theft Auto VI – Trailer 1</h3>
+              <p>Released December 4, 2023 &middot; 93 million views in 24 hours &middot; Song: "Love Is A Long Road" by Tom Petty</p>
+            </div>
+            <a href="https://www.youtube.com/watch?v=QdBZY2fkU-0"
+               target="_blank" rel="noopener" class="yt-link">
+              <i class="fab fa-youtube"></i> Watch on YouTube
+            </a>
+          </div>
+        </div>
+
+        <!-- TRAILER 2 -->
+        <div class="trailer-card" id="trailerCard2">
+          <div class="trailer-thumb" id="trailerThumb2">
+            <img
+              src="https://img.youtube.com/vi/VQRLujxTm3c/maxresdefault.jpg"
+              alt="GTA VI Trailer 2 thumbnail"
+              onerror="this.src='https://img.youtube.com/vi/VQRLujxTm3c/hqdefault.jpg'"
+            />
+            <div class="trailer-overlay">
+              <button class="play-btn" onclick="playTrailer('2','VQRLujxTm3c')" aria-label="Play Trailer 2">
+                <i class="fas fa-play"></i>
+              </button>
+            </div>
+          </div>
+          <div class="trailer-iframe-wrap hidden" id="trailerFrame2">
+            <!-- iframe injected by playTrailer() -->
+          </div>
+          <div class="trailer-meta">
+            <span class="trailer-badge trailer-badge-2">Trailer 2</span>
+            <div class="trailer-info">
+              <h3>Grand Theft Auto VI – Trailer 2</h3>
+              <p>Released May 6, 2025 &middot; 475 million views across all platforms &middot; Full names confirmed: Lucia Caminos &amp; Jason Duval</p>
+            </div>
+            <a href="https://www.youtube.com/watch?v=VQRLujxTm3c"
+               target="_blank" rel="noopener" class="yt-link">
+              <i class="fab fa-youtube"></i> Watch on YouTube
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /.trailers-grid -->
     </div>
   </section>
 
   <!-- ══════════════════════════════════════════════
-       RAWG.io API – GTA SERIES GAME BROWSER
-       Implements: client-side search, filter, pagination
-       Loading / error / empty states handled by MediaPage
+       API NINJAS – GTA SERIES GAME BROWSER
        ══════════════════════════════════════════════ -->
   <section class="section-pad bg-dark-alt" id="games">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">GTA Series Browser</h2>
-        <p class="section-sub">Live data from the RAWG.io gaming database API</p>
+        <p class="section-sub">Live data powered by the API Ninjas games database</p>
       </div>
 
-      <!-- ── Controls ── -->
+      <!-- Controls -->
       <div class="api-controls">
         <div class="search-box">
           <i class="fas fa-search" aria-hidden="true"></i>
-          <input
-            type="text"
-            id="searchInput"
-            class="api-search"
-            placeholder="Search GTA games…"
-            autocomplete="off"
-            aria-label="Search games"
-          />
+          <input type="text" id="searchInput" class="api-search"
+                 placeholder="Search GTA games…" autocomplete="off" aria-label="Search games" />
         </div>
         <div class="filter-controls">
           <select id="sortSelect" class="api-select" aria-label="Sort by">
             <option value="">Sort by…</option>
-            <option value="rating">Rating (High → Low)</option>
-            <option value="released">Release Date (Newest)</option>
+            <option value="rating">Score (High → Low)</option>
             <option value="name">Name (A → Z)</option>
           </select>
           <select id="platformFilter" class="api-select" aria-label="Filter by platform">
             <option value="">All Platforms</option>
-            <option value="PC">PC</option>
-            <option value="PlayStation">PlayStation</option>
-            <option value="Xbox">Xbox</option>
+            <option value="pc">PC</option>
+            <option value="playstation">PlayStation</option>
+            <option value="xbox">Xbox</option>
           </select>
         </div>
       </div>
 
-      <!-- ── Loading state ── -->
+      <!-- Loading -->
       <div class="api-state api-loading" id="apiLoading">
         <div class="spinner" aria-hidden="true"></div>
-        <p>Loading game data from RAWG.io…</p>
+        <p>Loading game data from API Ninjas…</p>
       </div>
-
-      <!-- ── Error state ── -->
+      <!-- Error -->
       <div class="api-state api-error hidden" id="apiError">
         <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
         <h3>Could not load game data</h3>
@@ -129,45 +172,32 @@
           <i class="fas fa-redo"></i> Retry
         </button>
       </div>
-
-      <!-- ── Empty state ── -->
+      <!-- Empty -->
       <div class="api-state api-empty hidden" id="apiEmpty">
         <i class="fas fa-gamepad" aria-hidden="true"></i>
         <p>No games match your search. Try a different term.</p>
       </div>
-
-      <!-- ── Results info ── -->
+      <!-- Results bar -->
       <div class="results-bar hidden" id="resultsBar">
         <span id="resultsCount"></span>
       </div>
-
-      <!-- ── Games grid ── -->
+      <!-- Grid -->
       <div class="games-grid" id="gamesGrid"></div>
-
-      <!-- ── Pagination ── -->
+      <!-- Pagination -->
       <div class="pagination-controls hidden" id="paginationControls">
-        <button class="page-btn" id="prevBtn" aria-label="Previous page">
-          <i class="fas fa-chevron-left"></i> Previous
-        </button>
+        <button class="page-btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Previous</button>
         <span class="page-indicator" id="pageIndicator">Page 1</span>
-        <button class="page-btn" id="nextBtn" aria-label="Next page">
-          Next <i class="fas fa-chevron-right"></i>
-        </button>
+        <button class="page-btn" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
       </div>
-
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════
-       FOOTER
-       ══════════════════════════════════════════════ -->
+  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <div class="footer-logo">
-            <span class="brand-gta">GTA</span><span class="brand-vi">VI</span>
-          </div>
+          <div class="footer-logo"><span class="brand-gta">GTA</span><span class="brand-vi">VI</span></div>
           <p>A fan-made tribute to the most anticipated game in history.</p>
         </div>
         <div class="footer-links-col">
@@ -182,7 +212,7 @@
           <h5>External</h5>
           <ul>
             <li><a href="https://www.rockstargames.com/VI" target="_blank" rel="noopener">Rockstar Games</a></li>
-            <li><a href="https://rawg.io" target="_blank" rel="noopener">RAWG.io</a></li>
+            <li><a href="https://api-ninjas.com" target="_blank" rel="noopener">API Ninjas</a></li>
           </ul>
         </div>
       </div>
@@ -196,5 +226,25 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/app.js"></script>
   <script src="js/media.js"></script>
+
+  <!-- Click-to-play trailer logic -->
+  <script>
+    function playTrailer(num, videoId) {
+      const thumb = document.getElementById('trailerThumb' + num);
+      const frame = document.getElementById('trailerFrame' + num);
+      if (!thumb || !frame) return;
+      // Build iframe
+      frame.innerHTML = `
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+          title="GTA VI Trailer ${num}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>`;
+      thumb.style.display = 'none';
+      frame.classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>

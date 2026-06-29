@@ -225,43 +225,61 @@ class TimelineEvent {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Timeline  –  renders all 5 timeline events
+   Timeline  –  accurate GTA VI development & release timeline
    ───────────────────────────────────────────────────────────── */
 class Timeline {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
 
-    // 5 curated timeline events (own content)
+    // 8 accurately sourced timeline events
     this.events = [
       new TimelineEvent({
-        date: 'December 5, 2023',
-        title: 'Trailer 1 Drops — The World Stops',
+        date: 'February 4, 2022',
+        title: 'Development Officially Confirmed',
         description:
-          'Rockstar Games released the first official GTA VI trailer after years of speculation, amassing over 90 million views within 24 hours — shattering YouTube records. Vice City was confirmed as the setting, and the world met Lucia.',
+          'After years of rumours and speculation, Rockstar Games officially confirmed that the next entry in the Grand Theft Auto series was in active development, promising to "set creative benchmarks for the series, the industry and entertainment as a whole."',
       }),
       new TimelineEvent({
-        date: 'December 2023',
-        title: 'Lucia & Jason Confirmed',
+        date: 'September 2022',
+        title: 'The Biggest Leak in Gaming History',
         description:
-          'The trailer introduced dual protagonists to the mainstream: Lucia, the first female lead in the mainline GTA series in over two decades, and Jason, her partner. The announcement sparked global conversation about representation in gaming.',
+          'Over 90 clips of early development footage were leaked on GTAForums, exposing early builds of Vice City, both protagonists, and core gameplay mechanics. It became one of the largest game leaks ever. Rockstar acknowledged the breach and stated development would continue unaffected.',
       }),
       new TimelineEvent({
-        date: '2024',
-        title: 'Trailer 2 – The World Expands',
+        date: 'November 2023',
+        title: 'Trailer 1 Announcement',
         description:
-          'A second trailer deepened the world of Leonida, showcasing Vice City\'s diverse neighbourhoods, the Everglades-inspired wilderness, the Leonida Keys, and further hints at the overarching criminal storyline driving Lucia and Jason.',
+          'Rockstar President Sam Houser announced that the first GTA VI trailer would drop in early December to celebrate the studio\'s 25th anniversary. The announcement tweet quickly became the most-liked gaming post in Twitter history, with 1.8 million likes in 24 hours.',
       }),
       new TimelineEvent({
-        date: 'May 2025',
-        title: 'Release Date Confirmed',
+        date: 'December 4, 2023',
+        title: 'Trailer 1 — The World Stops',
         description:
-          'Rockstar Games officially confirmed that GTA VI would launch in 2025 on PlayStation 5 and Xbox Series X|S. The PC version was confirmed to follow at a later, unannounced date.',
+          'GTA VI Trailer 1 was leaked online hours before its scheduled premiere, prompting Rockstar to release the official version immediately. The trailer racked up 93 million views in 24 hours — the third-most-viewed YouTube video ever in 24 hours. Vice City, Leonida, and dual protagonists Lucia and Jason were confirmed. Song: "Love Is A Long Road" by Tom Petty.',
       }),
       new TimelineEvent({
-        date: '2025',
-        title: 'GTA VI Launches on Console',
+        date: 'April 2024',
+        title: 'Rockstar Enters Final Development',
         description:
-          'Grand Theft Auto VI launches on PS5 and Xbox Series X|S, delivering the most technically ambitious open world ever created by Rockstar Games — and setting a new benchmark for the entire industry.',
+          'Rockstar Games requested all employees return to offices full-time from April 2024, citing "productivity and security" during the final stages of development. The studio described the project as being in its closing stretch, with teams focused intensely on polish and performance.',
+      }),
+      new TimelineEvent({
+        date: 'May 2, 2025',
+        title: 'First Delay — New Release Date Announced',
+        description:
+          'Rockstar announced GTA VI would be delayed from Fall 2025 to May 26, 2026, stating: "We are very sorry that this is later than you expected." The announcement came days before Trailer 2, giving fans something new to look forward to.',
+      }),
+      new TimelineEvent({
+        date: 'May 6, 2025',
+        title: 'Trailer 2 — Full Names Revealed',
+        description:
+          'GTA VI Trailer 2 dropped without warning, amassing 475 million views across all platforms in its first 24 hours (84 million on YouTube alone). The full names Lucia Caminos and Jason Duval were revealed for the first time. The trailer confirmed the story revolves around a criminal conspiracy stretching across Leonida, and was captured entirely in-game on PlayStation 5. Song featured: "Hot Together" by The Pointer Sisters.',
+      }),
+      new TimelineEvent({
+        date: 'November 6, 2025',
+        title: 'Second Delay — November 19, 2026',
+        description:
+          'Rockstar announced a second delay, pushing GTA VI back to November 19, 2026 — this time to ensure the highest level of polish. The studio wrote: "These extra months will allow us to finish the game with the level of polish you have come to expect and deserve." The game remains the most anticipated title in the history of the medium.',
       }),
     ];
   }
