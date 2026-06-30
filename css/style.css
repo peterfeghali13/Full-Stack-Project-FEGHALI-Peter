@@ -1474,19 +1474,20 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 /* ── 28. WORLD DETAIL MODAL ─────────────────────────────────── */
+/* Stacked layout — matches the gallery lightbox modal exactly:
+   image on top, then badge, title, description, traits below. */
 .world-modal-body {
-  display: flex;
-  gap: 0;
-  padding: 0;
-  min-height: 320px;
+  display: block;
+  padding: 24px;
 }
 
 .world-modal-img {
-  flex: 0 0 260px;
-  min-height: 320px;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius);
   overflow: hidden;
   position: relative;
-  border-radius: 0 0 0 var(--radius);
+  margin-bottom: 24px;
 }
 .world-modal-img img {
   width: 100%;
@@ -1497,23 +1498,20 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 .world-modal-info {
-  flex: 1;
-  padding: 28px 28px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .world-modal-badge {
   display: inline-block;
   padding: 4px 14px;
-  background: rgba(233,30,140,0.12);
-  border: 1px solid rgba(233,30,140,0.35);
-  color: var(--pink);
+  background: var(--pink);
+  color: #fff;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
   border-radius: 50px;
   width: fit-content;
 }
@@ -1521,15 +1519,15 @@ ul { list-style: none; padding: 0; margin: 0; }
 .world-modal-info h3 {
   font-family: var(--font-display);
   font-size: 2rem;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   margin: 0;
   line-height: 1;
 }
 
 .world-modal-info p {
   color: var(--text-muted);
-  font-size: 0.92rem;
-  line-height: 1.78;
+  font-size: 0.95rem;
+  line-height: 1.75;
   margin: 0;
 }
 
@@ -1537,8 +1535,6 @@ ul { list-style: none; padding: 0; margin: 0; }
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: auto;
-  padding-top: 8px;
 }
 
 /* Click hint text on cards */
@@ -1558,10 +1554,4 @@ ul { list-style: none; padding: 0; margin: 0; }
   transform: translateX(0);
 }
 
-/* ── 28b. WORLD MODAL RESPONSIVE ────────────────────────────── */
-@media (max-width: 600px) {
-  .world-modal-body   { flex-direction: column; }
-  .world-modal-img    { flex: 0 0 220px; min-height: 220px; border-radius: 0; }
-  .world-modal-info   { padding: 20px; }
-  .world-modal-info h3{ font-size: 1.6rem; }
-}
+
