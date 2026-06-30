@@ -1472,3 +1472,96 @@ ul { list-style: none; padding: 0; margin: 0; }
   object-fit: cover;
   display: block;
 }
+
+/* ── 28. WORLD DETAIL MODAL ─────────────────────────────────── */
+.world-modal-body {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  min-height: 320px;
+}
+
+.world-modal-img {
+  flex: 0 0 260px;
+  min-height: 320px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 0 0 0 var(--radius);
+}
+.world-modal-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.world-modal-info {
+  flex: 1;
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.world-modal-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(233,30,140,0.12);
+  border: 1px solid rgba(233,30,140,0.35);
+  color: var(--pink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border-radius: 50px;
+  width: fit-content;
+}
+
+.world-modal-info h3 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 1.5px;
+  margin: 0;
+  line-height: 1;
+}
+
+.world-modal-info p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.78;
+  margin: 0;
+}
+
+.world-modal-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* Click hint text on cards */
+.card-click-hint {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.78rem;
+  color: var(--pink);
+  font-weight: 600;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity var(--transition), transform var(--transition);
+}
+.character-card:hover .card-click-hint,
+.location-card:hover  .card-click-hint {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── 28b. WORLD MODAL RESPONSIVE ────────────────────────────── */
+@media (max-width: 600px) {
+  .world-modal-body   { flex-direction: column; }
+  .world-modal-img    { flex: 0 0 220px; min-height: 220px; border-radius: 0; }
+  .world-modal-info   { padding: 20px; }
+  .world-modal-info h3{ font-size: 1.6rem; }
+}

@@ -3,7 +3,43 @@
 'use strict';
 
 /* ─────────────────────────────────────────────────────────────
-   Character  –  card with a real photo portrait
+   Shared WorldModal  –  one Bootstrap modal for characters AND locations
+   ───────────────────────────────────────────────────────────── */
+class WorldModal {
+  constructor() {
+    const el = document.getElementById('worldModal');
+    this.instance = (el && window.bootstrap) ? new bootstrap.Modal(el) : null;
+  }
+
+  open({ image, gradient, badge, name, description, traits = [] }) {
+    // Populate image
+    const imgEl = document.getElementById('worldModalImg');
+    imgEl.style.background = gradient;
+    imgEl.innerHTML = `
+      <img src="${image}" alt="${name}"
+           style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block"
+           onerror="this.style.display='none'" />
+    `;
+
+    // Populate text
+    document.getElementById('worldModalTitle').textContent = name;
+    document.getElementById('worldModalName').textContent  = name;
+    document.getElementById('worldModalBadge').textContent = badge;
+    document.getElementById('worldModalDesc').textContent  = description;
+
+    // Traits (shown for characters, empty for locations)
+    const traitsEl = document.getElementById('worldModalTraits');
+    traitsEl.innerHTML = traits.map(t => `<span class="trait-tag">${t}</span>`).join('');
+
+    if (this.instance) this.instance.show();
+  }
+}
+
+/* Singleton – shared between CharactersSection and LocationsSection */
+let worldModal = null;
+
+/* ─────────────────────────────────────────────────────────────
+   Character  –  clickable card with portrait photo
    ───────────────────────────────────────────────────────────── */
 class Character {
   constructor({ name, role, description, image, fallbackGradient, traits }) {
@@ -18,20 +54,18 @@ class Character {
   render() {
     const traits = this.traits.map(t => `<span class="trait-tag">${t}</span>`).join('');
     return `
-      <div class="character-card">
+      <div class="character-card" tabindex="0" role="button"
+           style="cursor:pointer" aria-label="View ${this.name} details">
         <div class="character-portrait" style="background:${this.fallbackGradient}">
-          <img
-            src="${this.image}"
-            alt="${this.name}"
-            loading="lazy"
-            onerror="this.style.display='none'"
-          />
+          <img src="${this.image}" alt="${this.name}" loading="lazy"
+               onerror="this.style.display='none'" />
         </div>
         <div class="character-body">
           <span class="character-role">${this.role}</span>
           <h3>${this.name}</h3>
           <p>${this.description}</p>
           <div class="character-traits">${traits}</div>
+          <span class="card-click-hint">Click to view &rarr;</span>
         </div>
       </div>
     `;
@@ -39,7 +73,7 @@ class Character {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   CharactersSection  –  6 character cards with real photos
+   CharactersSection  –  6 character cards
    ───────────────────────────────────────────────────────────── */
 class CharactersSection {
   constructor(containerId) {
@@ -73,37 +107,59 @@ class CharactersSection {
         name: 'Cal',
         role: 'Supporting',
         description: 'A mysterious connection from the fringes of Leonida\'s criminal network. Cal serves as both an asset and a potential liability — his true motivations remain unclear throughout the story.',
-        image: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=800&q=80',
+        image: 'assets/images/cal.jpg',
         fallbackGradient: 'linear-gradient(135deg,#001a00,#1b5e20,#388e3c)',
         traits: ['Mysterious', 'Resourceful', 'Unpredictable'],
       }),
       new Character({
-        name: 'Dave',
+        name: 'Brian',
         role: 'Supporting',
-        description: 'One of Lucia and Jason\'s most reliable contacts in Leonida. Dave\'s deep local knowledge of the state\'s criminal networks and hideouts proves invaluable throughout the story.',
-        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+        description: 'A seasoned Leonida local who knows every back road, shady deal, and corrupt official in the state. Brian\'s connections and street experience make him an indispensable — if unpredictable — ally for Lucia and Jason.',
+        image: 'assets/images/brian.jpg',
         fallbackGradient: 'linear-gradient(135deg,#001433,#0d2d6b,#1565c0)',
-        traits: ['Reliable', 'Resourceful', 'Low Profile'],
+        traits: ['Experienced', 'Connected', 'Unpredictable', 'Bold'],
       }),
       new Character({
         name: 'Raul',
         role: 'Antagonist',
         description: 'A high-ranking enforcer with deep ties to organised crime across Leonida\'s underworld. Raul\'s violent nature and pride put him on an inevitable collision course with Lucia and Jason.',
-        image: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=800&q=80',
+        image: 'assets/images/raul.jpg',
         fallbackGradient: 'linear-gradient(135deg,#1a0500,#7c1a00,#c62828)',
         traits: ['Violent', 'Disciplined', 'Feared', 'Ruthless'],
       }),
     ];
   }
 
+  _bindEvents() {
+    if (!this.container) return;
+    this.container.querySelectorAll('.character-card').forEach((card, i) => {
+      const open = () => {
+        const c = this.characters[i];
+        worldModal.open({
+          image:       c.image,
+          gradient:    c.fallbackGradient,
+          badge:       c.role,
+          name:        c.name,
+          description: c.description,
+          traits:      c.traits,
+        });
+      };
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+    });
+  }
+
   render() {
     if (!this.container) return;
     this.container.innerHTML = this.characters.map(c => c.render()).join('');
+    this._bindEvents();
   }
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Location  –  card with a real photo background
+   Location  –  clickable card with real photo background
    ───────────────────────────────────────────────────────────── */
 class Location {
   constructor({ name, type, description, image, fallbackGradient }) {
@@ -116,19 +172,17 @@ class Location {
 
   render() {
     return `
-      <div class="location-card">
+      <div class="location-card" tabindex="0" role="button"
+           style="cursor:pointer" aria-label="View ${this.name} details">
         <div class="location-bg" style="background:${this.fallbackGradient}">
-          <img
-            src="${this.image}"
-            alt="${this.name}"
-            loading="lazy"
-            onerror="this.style.display='none'"
-          />
+          <img src="${this.image}" alt="${this.name}" loading="lazy"
+               onerror="this.style.display='none'" />
         </div>
         <div class="location-info">
           <div class="location-type">${this.type}</div>
           <h3>${this.name}</h3>
           <p>${this.description}</p>
+          <span class="card-click-hint">Click to explore &rarr;</span>
         </div>
       </div>
     `;
@@ -136,7 +190,7 @@ class Location {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   LocationsSection  –  5 location cards with real photos
+   LocationsSection  –  5 location cards
    ───────────────────────────────────────────────────────────── */
 class LocationsSection {
   constructor(containerId) {
@@ -180,9 +234,31 @@ class LocationsSection {
     ];
   }
 
+  _bindEvents() {
+    if (!this.container) return;
+    this.container.querySelectorAll('.location-card').forEach((card, i) => {
+      const open = () => {
+        const l = this.locations[i];
+        worldModal.open({
+          image:       l.image,
+          gradient:    l.fallbackGradient,
+          badge:       l.type,
+          name:        l.name,
+          description: l.description,
+          traits:      [],   // locations have no traits
+        });
+      };
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+    });
+  }
+
   render() {
     if (!this.container) return;
     this.container.innerHTML = this.locations.map(l => l.render()).join('');
+    this._bindEvents();
   }
 }
 
@@ -235,7 +311,7 @@ class Timeline {
       new TimelineEvent({
         date: 'December 4, 2023',
         title: 'Trailer 1 — The World Stops',
-        description: 'GTA VI Trailer 1 was leaked online hours before its scheduled premiere, prompting Rockstar to release the official version immediately. It racked up 93 million YouTube views in 24 hours — the third-most-viewed YouTube video ever. Vice City, Leonida, and protagonists Lucia and Jason were confirmed. Song: "Love Is A Long Road" by Tom Petty.',
+        description: 'GTA VI Trailer 1 was leaked online hours before its scheduled premiere, prompting Rockstar to release the official version immediately. It racked up 93 million YouTube views in 24 hours. Vice City, Leonida, and protagonists Lucia and Jason were confirmed. Song: "Love Is A Long Road" by Tom Petty.',
       }),
       new TimelineEvent({
         date: 'April 2024',
@@ -250,11 +326,11 @@ class Timeline {
       new TimelineEvent({
         date: 'May 6, 2025',
         title: 'Trailer 2 — Full Names Revealed',
-        description: 'GTA VI Trailer 2 dropped without warning, amassing 475 million views across all platforms in its first 24 hours (84 million on YouTube). Full names Lucia Caminos and Jason Duval were officially confirmed. The story centres on a criminal conspiracy across Leonida. Captured entirely in-game on PS5. Featured song: "Hot Together" by The Pointer Sisters.',
+        description: 'GTA VI Trailer 2 dropped without warning, amassing 475 million views across all platforms in its first 24 hours (84 million on YouTube). Full names Lucia Caminos and Jason Duval were officially confirmed. Captured entirely in-game on PS5. Featured song: "Hot Together" by The Pointer Sisters.',
       }),
       new TimelineEvent({
         date: 'November 6, 2025',
-        title: 'Second Delay — Final Release Date',
+        title: 'Second Delay — Final Release Date Set',
         description: 'Rockstar announced a second delay, pushing GTA VI back to November 19, 2026: "These extra months will allow us to finish the game with the level of polish you have come to expect and deserve." The game remains the most anticipated title in the history of the medium.',
       }),
     ];
@@ -270,6 +346,7 @@ class Timeline {
    Boot
    ───────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  worldModal = new WorldModal();
   new CharactersSection('charactersGrid').render();
   new LocationsSection('locationsGrid').render();
   new Timeline('timelineContainer').render();

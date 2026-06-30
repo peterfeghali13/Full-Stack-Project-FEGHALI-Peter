@@ -129,6 +129,32 @@
     </div>
   </footer>
 
+  <!-- ══════════════════════════════════════════════
+       WORLD DETAIL MODAL
+       Opens when clicking any character or location card.
+       Populated by world.js CharactersSection / LocationsSection.
+       ══════════════════════════════════════════════ -->
+  <div class="modal fade" id="worldModal" tabindex="-1"
+       aria-labelledby="worldModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="worldModalTitle"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body world-modal-body">
+          <div class="world-modal-img" id="worldModalImg"></div>
+          <div class="world-modal-info">
+            <span class="world-modal-badge" id="worldModalBadge"></span>
+            <h3 id="worldModalName"></h3>
+            <p  id="worldModalDesc"></p>
+            <div class="world-modal-traits" id="worldModalTraits"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/app.js"></script>
   <script src="js/world.js"></script>
