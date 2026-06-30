@@ -490,6 +490,11 @@ ul { list-style: none; padding: 0; margin: 0; }
   color: var(--text-light);
   margin-bottom: 10px;
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 .gallery-tag {
   display: inline-block;
@@ -682,7 +687,16 @@ ul { list-style: none; padding: 0; margin: 0; }
   letter-spacing: 1px;
   margin-bottom: 8px;
 }
-.character-body p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; }
+.character-body p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
 
 .character-traits {
   display: flex;
@@ -754,7 +768,16 @@ ul { list-style: none; padding: 0; margin: 0; }
   letter-spacing: 1px;
   margin-bottom: 6px;
 }
-.location-info p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; }
+.location-info p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
 
 /* ── 14. TIMELINE ───────────────────────────────────────────── */
 .timeline-wrap {
