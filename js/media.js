@@ -397,8 +397,86 @@ class MediaPage {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   TrailerModal  –  shared Bootstrap modal that plays a YouTube
+   trailer inline (embedded iframe) instead of leaving the site.
+   Mirrors the gallery lightbox modal: stacked media on top,
+   then badge / title / description below.
+   ───────────────────────────────────────────────────────────── */
+class TrailerModal {
+  constructor() {
+    const el = document.getElementById('trailerModal');
+    this.el       = el;
+    this.instance = (el && window.bootstrap) ? new bootstrap.Modal(el) : null;
+    this.videoEl  = document.getElementById('trailerModalVideo');
+
+    // Stop playback the moment the modal finishes closing
+    if (this.el) {
+      this.el.addEventListener('hidden.bs.modal', () => this._stop());
+    }
+  }
+
+  open({ videoId, title, badge, badgeClass, description }) {
+    document.getElementById('trailerModalTitle').textContent   = title;
+    document.getElementById('trailerModalHeading').textContent = title;
+    document.getElementById('trailerModalDesc').textContent    = description;
+
+    const badgeEl = document.getElementById('trailerModalBadge');
+    badgeEl.textContent = badge;
+    badgeEl.className   = 'trailer-badge' + (badgeClass ? ` ${badgeClass}` : '');
+
+    // Embed the YouTube player with autoplay, muted-free, no related videos
+    this.videoEl.innerHTML = `
+      <iframe
+        src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+        title="${title}"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    `;
+
+    if (this.instance) this.instance.show();
+  }
+
+  /* Remove the iframe so audio/video actually stops once closed */
+  _stop() {
+    this.videoEl.innerHTML = '';
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TrailersSection  –  binds both trailer thumbnails to the
+   TrailerModal, reading trailer data straight off data-* attrs.
+   ───────────────────────────────────────────────────────────── */
+class TrailersSection {
+  constructor() {
+    this.modal = new TrailerModal();
+    this._bindEvents();
+  }
+
+  _bindEvents() {
+    document.querySelectorAll('.trailer-thumb').forEach(thumb => {
+      const open = () => {
+        this.modal.open({
+          videoId:    thumb.dataset.videoId,
+          title:      thumb.dataset.title,
+          badge:      thumb.dataset.badge,
+          badgeClass: thumb.dataset.badgeClass,
+          description: thumb.dataset.description,
+        });
+      };
+      thumb.addEventListener('click', open);
+      thumb.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+    });
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
    Boot – media page initialisation
    ───────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  new TrailersSection();
   new MediaPage().init();
 });

@@ -51,7 +51,8 @@
   <!-- ══════════════════════════════════════════════
        TRAILERS  –  both Trailer 1 & Trailer 2
        Click-to-play: thumbnail shown first,
-       clicking loads the iframe OR opens YouTube.
+       clicking opens the trailer modal and plays
+       the embedded YouTube video right on this site.
        ══════════════════════════════════════════════ -->
   <section class="section-pad" id="trailers">
     <div class="container">
@@ -64,20 +65,23 @@
 
         <!-- TRAILER 1 -->
         <div class="trailer-card" id="trailerCard1">
-          <div class="trailer-thumb" id="trailerThumb1">
+          <div class="trailer-thumb" id="trailerThumb1"
+               data-video-id="QdBZY2fkU-0"
+               data-title="Grand Theft Auto VI – Trailer 1"
+               data-badge="Trailer 1"
+               data-badge-class=""
+               data-description="Released December 4, 2023 · 93 million views in 24 hours · Song: &quot;Love Is A Long Road&quot; by Tom Petty"
+               tabindex="0" role="button" aria-label="Play Trailer 1">
             <img
               src="https://img.youtube.com/vi/QdBZY2fkU-0/maxresdefault.jpg"
               alt="GTA VI Trailer 1 thumbnail"
               onerror="this.src='https://img.youtube.com/vi/QdBZY2fkU-0/hqdefault.jpg'"
             />
             <div class="trailer-overlay">
-              <button class="play-btn" onclick="playTrailer('1','QdBZY2fkU-0')" aria-label="Play Trailer 1">
+              <button class="play-btn" aria-label="Play Trailer 1" tabindex="-1">
                 <i class="fas fa-play"></i>
               </button>
             </div>
-          </div>
-          <div class="trailer-iframe-wrap hidden" id="trailerFrame1">
-            <!-- iframe injected by playTrailer() -->
           </div>
           <div class="trailer-meta">
             <span class="trailer-badge">Trailer 1</span>
@@ -94,20 +98,23 @@
 
         <!-- TRAILER 2 -->
         <div class="trailer-card" id="trailerCard2">
-          <div class="trailer-thumb" id="trailerThumb2">
+          <div class="trailer-thumb" id="trailerThumb2"
+               data-video-id="VQRLujxTm3c"
+               data-title="Grand Theft Auto VI – Trailer 2"
+               data-badge="Trailer 2"
+               data-badge-class="trailer-badge-2"
+               data-description="Released May 6, 2025 · 475 million views across all platforms · Full names confirmed: Lucia Caminos &amp; Jason Duval"
+               tabindex="0" role="button" aria-label="Play Trailer 2">
             <img
               src="https://img.youtube.com/vi/VQRLujxTm3c/maxresdefault.jpg"
               alt="GTA VI Trailer 2 thumbnail"
               onerror="this.src='https://img.youtube.com/vi/VQRLujxTm3c/hqdefault.jpg'"
             />
             <div class="trailer-overlay">
-              <button class="play-btn" onclick="playTrailer('2','VQRLujxTm3c')" aria-label="Play Trailer 2">
+              <button class="play-btn" aria-label="Play Trailer 2" tabindex="-1">
                 <i class="fas fa-play"></i>
               </button>
             </div>
-          </div>
-          <div class="trailer-iframe-wrap hidden" id="trailerFrame2">
-            <!-- iframe injected by playTrailer() -->
           </div>
           <div class="trailer-meta">
             <span class="trailer-badge trailer-badge-2">Trailer 2</span>
@@ -125,6 +132,32 @@
       </div><!-- /.trailers-grid -->
     </div>
   </section>
+
+  <!-- ══════════════════════════════════════════════
+       TRAILER MODAL
+       Opens when a trailer thumbnail is clicked.
+       Plays the embedded YouTube video right here —
+       same popup pattern as the gallery lightbox.
+       Populated by TrailerModal class in media.js.
+       ══════════════════════════════════════════════ -->
+  <div class="modal fade" id="trailerModal" tabindex="-1"
+       aria-labelledby="trailerModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="trailerModalTitle" style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:1px;">Trailer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Populated dynamically by TrailerModal.open() -->
+          <div class="trailer-modal-video" id="trailerModalVideo"></div>
+          <span class="trailer-badge" id="trailerModalBadge"></span>
+          <h3 class="trailer-modal-heading" id="trailerModalHeading"></h3>
+          <p  class="trailer-modal-desc"    id="trailerModalDesc"></p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ══════════════════════════════════════════════
        API NINJAS – GTA SERIES GAME BROWSER
@@ -226,12 +259,5 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/app.js"></script>
   <script src="js/media.js"></script>
-
-  <!-- Trailer click → opens YouTube in new tab -->
-  <script>
-    function playTrailer(num, videoId) {
-      window.open('https://www.youtube.com/watch?v=' + videoId, '_blank');
-    }
-  </script>
 </body>
 </html>
