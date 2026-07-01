@@ -2,7 +2,7 @@
 
 /* ── API CONFIGURATION ──────────────────────────────────────── */
 const BASE_URL  = 'https://en.wikipedia.org/w/api.php';
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 8;
 
 /* ── HARDCODED GTA GAME LIST ────────────────────────────────── */
 /*
@@ -98,19 +98,18 @@ class GameCard {
       : '';
 
     return `
-      <div class="game-card">
-        <div class="game-thumb">${thumbHtml}</div>
-        <div class="game-card-body">
-          <div class="game-tags">${platformTags}</div>
-          <h4>${this.name}</h4>
-          ${releasedHtml}
-          ${descHtml}
-          <a href="${this.url}" target="_blank" rel="noopener"
-             style="color:var(--cyan);font-size:0.78rem;display:inline-block;margin-top:4px;">
-            Read on Wikipedia ↗
-          </a>
+      <a href="${this.url}" target="_blank" rel="noopener" class="game-card-link">
+        <div class="game-card">
+          <div class="game-thumb">${thumbHtml}</div>
+          <div class="game-card-body">
+            <div class="game-tags">${platformTags}</div>
+            <h4>${this.name}</h4>
+            ${releasedHtml}
+            ${descHtml}
+            <span class="game-wiki-hint">Read on Wikipedia ↗</span>
+          </div>
         </div>
-      </div>
+      </a>
     `;
   }
 }

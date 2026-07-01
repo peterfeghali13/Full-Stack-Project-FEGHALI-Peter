@@ -884,7 +884,7 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 .search-box {
-  flex: 1 1 280px;
+  flex: 1 1 100%;   /* always full width on its own row */
   position: relative;
 }
 .search-box i {
@@ -916,9 +916,15 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 .api-search::placeholder { color: var(--text-muted); }
 
-.filter-controls { display: flex; gap: 12px; flex-wrap: wrap; }
+.filter-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1 1 100%;   /* sit below search on its own row */
+}
 
 .api-select {
+  flex: 1 1 160px;  /* each select stretches to fill available space */
   height: 48px;
   padding: 0 36px 0 14px;
   background: var(--card);
@@ -982,16 +988,27 @@ ul { list-style: none; padding: 0; margin: 0; }
   gap: 22px;
 }
 
-.game-card {
+/* Anchor wrapper that makes the whole card clickable */
+.game-card-link {
   flex: 1 1 280px;
   max-width: 360px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;   /* so the inner card stretches to full height */
+}
+
+.game-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;  /* card body grows to fill remaining height */
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  cursor: pointer;
 }
-.game-card:hover {
+.game-card-link:hover .game-card {
   transform: translateY(-5px);
   border-color: rgba(0, 212, 255, 0.28);
   box-shadow: 0 22px 55px rgba(0,0,0,0.45), 0 0 22px var(--cyan-glow);
@@ -1009,7 +1026,7 @@ ul { list-style: none; padding: 0; margin: 0; }
   transition: transform var(--transition);
   display: block;
 }
-.game-card:hover .game-thumb img { transform: scale(1.06); }
+.game-card-link:hover .game-thumb img { transform: scale(1.06); }
 
 .game-thumb-placeholder {
   width: 100%; height: 100%;
@@ -1020,7 +1037,21 @@ ul { list-style: none; padding: 0; margin: 0; }
   color: rgba(255,255,255,0.15);
 }
 
-.game-card-body { padding: 18px 20px 20px; }
+.game-card-body {
+  padding: 18px 20px 20px;
+  flex: 1;              /* grows to fill remaining card height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Push wiki hint to the bottom of every card */
+.game-wiki-hint {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 12px;
+  color: var(--cyan);
+  font-size: 0.78rem;
+}
 
 .game-tags {
   display: flex;
