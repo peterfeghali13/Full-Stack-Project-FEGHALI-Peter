@@ -1,121 +1,89 @@
 'use strict';
 
 /* ── API CONFIGURATION ──────────────────────────────────────── */
-const API_KEY     = 'h4jr2y3ptgswNUFvtqMf0N4KLz5EMAhQ5PBHvbAM';  // ← paste your key here
-const BASE_URL    = 'https://api.api-ninjas.com/v1/games';
-const SEARCH_TERM = 'grand theft auto';
-const PAGE_SIZE   = 9;   // results shown per page
+/*
+   Wikipedia Action API — completely free, no account, no API key.
+   Adding  origin=*  to the query string is all that is needed to
+   enable full CORS access from any browser / any static host.
+
+   Docs: https://www.mediawiki.org/wiki/API:Cross-site_requests
+*/
+const BASE_URL    = 'https://en.wikipedia.org/w/api.php';
+const SEARCH_TERM = 'Grand Theft Auto';
+const PAGE_SIZE   = 9;
 
 /* ─────────────────────────────────────────────────────────────
    GameCard
-   Wraps one API Ninjas game object and renders a styled card.
+   Wraps one Wikipedia page object and renders a styled card.
 
-   API Ninjas games response shape:
-     { name, platform, genre, score, url }
-     score  = Metacritic score  0–100
+   Wikipedia response shape (per page, from generator=search):
+     { pageid, title, index,
+       extract,           ← 2-sentence intro text
+       thumbnail: { source, width, height } }
    ───────────────────────────────────────────────────────────── */
 class GameCard {
-  constructor(rawGame) {
-    this.name     = rawGame.name     || 'Unknown Title';
-    this.platform = rawGame.platform || '';
-    this.genre    = rawGame.genre    || '';
-    this.score    = rawGame.score    || 0;   // Metacritic 0–100
-    this.url      = rawGame.url      || '#';
+  constructor(page) {
+    this.name        = page.title   || 'Unknown Title';
+    this.description = this._clean(page.extract || '');
+    this.image       = page.thumbnail?.source || null;
+    this.pageid      = page.pageid;
+    this.url         = `https://en.wikipedia.org/?curid=${page.pageid}`;
+
+    /* Keep platform/genre as empty strings so SearchFilter still works */
+    this.platform  = '';
+    this.platforms = [];
+    this.genre     = '';
+    this.score     = 0;
   }
 
-  /* Convert raw Metacritic score to a /5 rating for display */
-  _ratingOf5() {
-    return (this.score / 20).toFixed(1);   // e.g. 97 → 4.9
+  /* Strip any leftover HTML tags from the extract */
+  _clean(html) {
+    return html.replace(/<[^>]+>/g, '').trim();
   }
 
-  /* Gradient placeholder — different colour per genre */
+  /* Gradient placeholder when no Wikipedia thumbnail is available */
   _gradient() {
-    const map = {
-      action:    'linear-gradient(135deg,#1a0533,#6b1069,#e91e8c)',
-      racing:    'linear-gradient(135deg,#1a0000,#7c0000,#f5222d)',
-      adventure: 'linear-gradient(135deg,#001433,#003a8c,#00d4ff)',
-      rpg:       'linear-gradient(135deg,#002400,#1a4a1a,#52c41a)',
-      shooter:   'linear-gradient(135deg,#1a1100,#5d4037,#d4a017)',
-    };
-    const key = Object.keys(map).find(k =>
-      this.genre.toLowerCase().includes(k)
-    );
-    return map[key] || 'linear-gradient(135deg,#0d0020,#4b0082,#9900cc)';
-  }
-
-  _icon() {
-    const g = this.genre.toLowerCase();
-    if (g.includes('action'))    return 'fas fa-gun';
-    if (g.includes('racing'))    return 'fas fa-car-side';
-    if (g.includes('adventure')) return 'fas fa-compass';
-    if (g.includes('rpg'))       return 'fas fa-shield-halved';
-    if (g.includes('shooter'))   return 'fas fa-crosshairs';
-    return 'fas fa-gamepad';
-  }
-
-  /* Platform tag – shorten long strings */
-  _shortPlatform(str) {
-    if (!str) return '';
-    if (/PlayStation\s*5/i.test(str))  return 'PS5';
-    if (/PlayStation\s*4/i.test(str))  return 'PS4';
-    if (/PlayStation\s*3/i.test(str))  return 'PS3';
-    if (/PlayStation\s*2/i.test(str))  return 'PS2';
-    if (/PlayStation\s*1|PS1|PSX/i.test(str)) return 'PS1';
-    if (/Xbox Series/i.test(str))      return 'Xbox Series';
-    if (/Xbox One/i.test(str))         return 'Xbox One';
-    if (/Xbox 360/i.test(str))         return 'Xbox 360';
-    if (/Nintendo Switch/i.test(str))  return 'Switch';
-    if (/PC|Windows/i.test(str))       return 'PC';
-    return str.slice(0, 10);
-  }
-
-  /* Score badge colour */
-  _scoreColor() {
-    if (this.score >= 85) return '#52c41a';   // green  – great
-    if (this.score >= 70) return '#f5c518';   // gold   – good
-    if (this.score  > 0)  return '#fa8c16';   // orange – mixed
-    return 'var(--text-muted)';               // grey   – no score
+    const lc = this.name.toLowerCase();
+    if (lc.includes('vice'))  return 'linear-gradient(135deg,#1a0533,#6b1069,#e91e8c)';
+    if (lc.includes('san'))   return 'linear-gradient(135deg,#001433,#003a8c,#00d4ff)';
+    if (lc.includes('v') || lc.includes('five'))
+                               return 'linear-gradient(135deg,#1a1100,#5d4037,#d4a017)';
+    return 'linear-gradient(135deg,#0d0020,#4b0082,#9900cc)';
   }
 
   render() {
-    const platformTag = this.platform
-      ? `<span class="game-tag">${this._shortPlatform(this.platform)}</span>`
-      : '';
-    const genreTag = this.genre
-      ? `<span class="game-tag">${this.genre}</span>`
-      : '';
+    const thumbHtml = this.image
+      ? `<img src="${this.image}" alt="${this.name} cover"
+              loading="lazy"
+              style="width:100%;height:100%;object-fit:cover;display:block;">`
+      : `<div style="width:100%;height:100%;background:${this._gradient()};
+                     display:flex;align-items:center;justify-content:center;">
+           <i class="fas fa-gamepad"
+              style="font-size:2rem;color:rgba(255,255,255,.35);" aria-hidden="true"></i>
+         </div>`;
 
-    const scoreHtml = this.score
-      ? `<span style="color:${this._scoreColor()};font-weight:700;font-size:0.92rem;">
-           ${this.score}<span style="font-size:0.72rem;color:var(--text-muted)">/100</span>
-         </span>
-         <span class="game-rating" style="margin-left:8px">
-           <i class="fas fa-star" aria-hidden="true"></i>
-           <span>${this._ratingOf5()}</span>
-         </span>`
-      : `<span style="color:var(--text-muted);font-size:0.85rem">No score</span>`;
-
-    const linkHtml = this.url && this.url !== '#'
-      ? `<a href="${this.url}" target="_blank" rel="noopener"
-            style="color:var(--cyan);font-size:0.78rem;margin-top:4px;display:inline-block">
-           View on Metacritic ↗
-         </a>`
+    const desc = this.description
+      ? `<p style="font-size:0.82rem;color:var(--text-muted);line-height:1.65;
+                   margin:10px 0;display:-webkit-box;-webkit-box-orient:vertical;
+                   -webkit-line-clamp:3;overflow:hidden;">
+           ${this.description}
+         </p>`
       : '';
 
     return `
       <div class="game-card">
-        <div class="game-thumb">
-          <div class="game-thumb-placeholder" style="background:${this._gradient()}">
-            <i class="${this._icon()}" aria-hidden="true"></i>
-          </div>
-        </div>
+        <div class="game-thumb">${thumbHtml}</div>
         <div class="game-card-body">
-          <div class="game-tags">${platformTag}${genreTag}</div>
-          <h4>${this.name}</h4>
-          <div class="game-meta">
-            <div style="display:flex;align-items:center;gap:4px">${scoreHtml}</div>
+          <div class="game-tags">
+            <span class="game-tag">GTA Series</span>
+            <span class="game-tag">Wikipedia</span>
           </div>
-          ${linkHtml}
+          <h4>${this.name}</h4>
+          ${desc}
+          <a href="${this.url}" target="_blank" rel="noopener"
+             style="color:var(--cyan);font-size:0.78rem;display:inline-block;margin-top:4px;">
+            Read on Wikipedia ↗
+          </a>
         </div>
       </div>
     `;
@@ -124,55 +92,62 @@ class GameCard {
 
 /* ─────────────────────────────────────────────────────────────
    ApiManager
-   Handles all API Ninjas fetch calls.
-   API Ninjas uses page-based pagination (0, 1, 2 …).
-   Each page returns up to 10 results.
-   There is no total count — we detect end-of-results when the
-   returned array is empty.
+   Uses Wikipedia's generator=search action with prop=pageimages
+   and prop=extracts to fetch cover art + descriptions in one
+   request, with no API key and no CORS preflight.
+
+   Pagination: offset-based (gsroffset).  We convert the
+   internal 0-based page index to byte offset = page × PAGE_SIZE.
    ───────────────────────────────────────────────────────────── */
 class ApiManager {
   constructor() {
-    this.currentPage  = 0;
-    this.hasMore      = true;   // false when API returns empty array
-    this.hasPrevious  = false;
+    this.currentPage = 0;
+    this.hasMore     = true;
+    this.hasPrevious = false;
   }
 
   async fetchGames(query = SEARCH_TERM, page = 0) {
-    /* Key guard */
-    if (!API_KEY || API_KEY === 'YOUR_API_NINJAS_KEY') {
-      throw new Error(
-        'No API key set. Open js/media.js and replace YOUR_API_NINJAS_KEY ' +
-        'with your free key from api-ninjas.com → My Account.'
-      );
-    }
+    const offset = page * PAGE_SIZE;
 
     const params = new URLSearchParams({
-      name: query,
-      page,
+      action:       'query',
+      generator:    'search',
+      gsrsearch:    query,          // e.g. "Grand Theft Auto"
+      gsrlimit:     PAGE_SIZE,
+      gsroffset:    offset,
+      prop:         'pageimages|extracts',
+      exintro:      '1',            // only the intro paragraph
+      exsentences:  '2',            // limit to 2 sentences
+      pithumbsize:  '400',          // thumbnail width in px
+      format:       'json',
+      origin:       '*',            // ← enables CORS from any domain
     });
 
-    const response = await fetch(`${BASE_URL}?${params}`, {
-      headers: { 'X-Api-Key': API_KEY },
-    });
+    const response = await fetch(`${BASE_URL}?${params}`);
 
     if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        throw new Error(
-          'Invalid API key. Double-check it at api-ninjas.com → My Account.'
-        );
-      }
-      throw new Error(`API error ${response.status}: ${response.statusText}`);
+      throw new Error(`Wikipedia API error ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
 
-    /* API Ninjas returns an array; empty = no more pages */
-    const results  = Array.isArray(data) ? data : [];
-    this.hasMore   = results.length > 0;
+    if (!data.query?.pages) {
+      this.hasMore     = false;
+      this.hasPrevious = page > 0;
+      this.currentPage = page;
+      return [];
+    }
+
+    /* Pages come back as an object keyed by pageid;
+       sort by index to preserve search-ranking order */
+    const results = Object.values(data.query.pages)
+      .sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+
+    this.hasMore     = !!data.continue;   // Wikipedia sets .continue when more pages exist
     this.hasPrevious = page > 0;
     this.currentPage = page;
 
-    return results.map(g => new GameCard(g));
+    return results.map(p => new GameCard(p));
   }
 }
 
@@ -205,24 +180,22 @@ class SearchFilter {
       );
     }
 
-    /* Platform filter – partial match on the platform string */
+    /* Platform filter — gracefully ignored for Wikipedia results */
     if (this.platform) {
       result = result.filter(g =>
-        g.platform.toLowerCase().includes(this.platform)
+        g.platform.toLowerCase().includes(this.platform) ||
+        g.platforms.some(p => p.toLowerCase().includes(this.platform))
       );
     }
 
     /* Sort */
     switch (this.sort) {
       case 'rating':
-        result.sort((a, b) => b.score - a.score);
+        /* Wikipedia has no score — sort by name alphabetically */
+        result.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case 'name':
         result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'released':
-        /* API Ninjas doesn't return release year — fall back to score */
-        result.sort((a, b) => b.score - a.score);
         break;
       default:
         break;
@@ -280,7 +253,7 @@ class MediaPage {
     this._el.platform?.addEventListener('change', () => this._applyClientFilter());
 
     this._el.retry?.addEventListener('click',  () => this._load(this.apiPage));
-    this._el.prevBtn?.addEventListener('click', () => this._load(this.apiPage - 1));
+    this._el.prevBtn?.addEventListener('click', () => this._load(Math.max(0, this.apiPage - 1)));
     this._el.nextBtn?.addEventListener('click', () => this._load(this.apiPage + 1));
   }
 
@@ -348,9 +321,8 @@ class MediaPage {
 
   /* ── Pagination controls ────────────────────────────────────── */
   _updatePagination() {
-    const displayPage = this.apiPage + 1;  // show 1-based to user
     if (this._el.indicator) {
-      this._el.indicator.textContent = `Page ${displayPage}`;
+      this._el.indicator.textContent = `Page ${this.apiPage + 1}`;
     }
     if (this._el.prevBtn) this._el.prevBtn.disabled = !this.api.hasPrevious;
     if (this._el.nextBtn) this._el.nextBtn.disabled = !this.api.hasMore;
@@ -373,7 +345,7 @@ class MediaPage {
 
       if (!games.length) {
         /* We went past the last page — back up one */
-        this.apiPage = page - 1;
+        this.apiPage = Math.max(0, page - 1);
         this._updatePagination();
         return;
       }
