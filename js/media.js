@@ -1,53 +1,70 @@
 'use strict';
 
 /* ── API CONFIGURATION ──────────────────────────────────────── */
-/*
-   Wikipedia Action API — completely free, no account, no API key.
-   Adding  origin=*  to the query string is all that is needed to
-   enable full CORS access from any browser / any static host.
+const BASE_URL  = 'https://en.wikipedia.org/w/api.php';
+const PAGE_SIZE = 9;
 
-   Docs: https://www.mediawiki.org/wiki/API:Cross-site_requests
+/* ── HARDCODED GTA GAME LIST ────────────────────────────────── */
+/*
+   We control exactly which titles appear (only real GTA games)
+   and supply the platform data that Wikipedia doesn't provide.
+   Wikipedia is used only to fetch descriptions + cover art
+   for these specific titles — no search needed.
 */
-const BASE_URL    = 'https://en.wikipedia.org/w/api.php';
-const SEARCH_TERM = 'Grand Theft Auto';
-const PAGE_SIZE   = 9;
+const GTA_GAMES = [
+  { title: 'Grand Theft Auto',                         platforms: ['PC', 'PlayStation'],                              released: '1997' },
+  { title: 'Grand Theft Auto 2',                       platforms: ['PC', 'PlayStation'],                              released: '1999' },
+  { title: 'Grand Theft Auto III',                     platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2001' },
+  { title: 'Grand Theft Auto: Vice City',              platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2002' },
+  { title: 'Grand Theft Auto: San Andreas',            platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2004' },
+  { title: 'Grand Theft Auto: Liberty City Stories',   platforms: ['PlayStation'],                                    released: '2005' },
+  { title: 'Grand Theft Auto: Vice City Stories',      platforms: ['PlayStation'],                                    released: '2006' },
+  { title: 'Grand Theft Auto IV',                      platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2008' },
+  { title: 'Grand Theft Auto: The Lost and Damned',    platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2009' },
+  { title: 'Grand Theft Auto: The Ballad of Gay Tony', platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2009' },
+  { title: 'Grand Theft Auto: Chinatown Wars',         platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch'],   released: '2009' },
+  { title: 'Grand Theft Auto V',                       platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2013' },
+  { title: 'Grand Theft Auto Online',                  platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2013' },
+  { title: 'Grand Theft Auto VI',                      platforms: ['PlayStation', 'Xbox'],                            released: '2025' },
+];
 
 /* ─────────────────────────────────────────────────────────────
    GameCard
-   Wraps one Wikipedia page object and renders a styled card.
-
-   Wikipedia response shape (per page, from generator=search):
-     { pageid, title, index,
-       extract,           ← 2-sentence intro text
-       thumbnail: { source, width, height } }
+   Wraps one Wikipedia page object + one GTA_GAMES entry.
    ───────────────────────────────────────────────────────────── */
 class GameCard {
-  constructor(page) {
-    this.name        = page.title   || 'Unknown Title';
-    this.description = this._clean(page.extract || '');
-    this.image       = page.thumbnail?.source || null;
-    this.pageid      = page.pageid;
-    this.url         = `https://en.wikipedia.org/?curid=${page.pageid}`;
+  constructor(wikiPage, gameEntry) {
+    this.name        = wikiPage.title    || gameEntry.title;
+    this.description = this._clean(wikiPage.extract || '');
+    this.image       = wikiPage.thumbnail?.source   || null;
+    this.pageid      = wikiPage.pageid   || null;
+    this.url         = this.pageid
+      ? `https://en.wikipedia.org/?curid=${this.pageid}`
+      : `https://en.wikipedia.org/wiki/${encodeURIComponent(gameEntry.title)}`;
 
-    /* Keep platform/genre as empty strings so SearchFilter still works */
-    this.platform  = '';
-    this.platforms = [];
-    this.genre     = '';
-    this.score     = 0;
+    /* Platform data comes from the hardcoded list — always populated */
+    this.platforms = gameEntry.platforms || [];
+    this.platform  = this.platforms.join(', ');
+    this.released  = gameEntry.released  || '';
+
+    /* Kept for SearchFilter compatibility */
+    this.genre = '';
+    this.score = 0;
   }
 
-  /* Strip any leftover HTML tags from the extract */
   _clean(html) {
     return html.replace(/<[^>]+>/g, '').trim();
   }
 
-  /* Gradient placeholder when no Wikipedia thumbnail is available */
   _gradient() {
     const lc = this.name.toLowerCase();
-    if (lc.includes('vice'))  return 'linear-gradient(135deg,#1a0533,#6b1069,#e91e8c)';
-    if (lc.includes('san'))   return 'linear-gradient(135deg,#001433,#003a8c,#00d4ff)';
-    if (lc.includes('v') || lc.includes('five'))
-                               return 'linear-gradient(135deg,#1a1100,#5d4037,#d4a017)';
+    if (lc.includes('vice'))          return 'linear-gradient(135deg,#1a0533,#6b1069,#e91e8c)';
+    if (lc.includes('san andreas'))   return 'linear-gradient(135deg,#001a00,#004d00,#00aa00)';
+    if (lc.includes('iv') || lc.includes('four'))
+                                       return 'linear-gradient(135deg,#001433,#003a8c,#00d4ff)';
+    if (lc.includes('online'))        return 'linear-gradient(135deg,#00001a,#00004d,#0000ff)';
+    if (lc.includes('vi') || lc.includes('six'))
+                                       return 'linear-gradient(135deg,#1a0533,#6b1069,#e91e8c)';
     return 'linear-gradient(135deg,#0d0020,#4b0082,#9900cc)';
   }
 
@@ -62,9 +79,19 @@ class GameCard {
               style="font-size:2rem;color:rgba(255,255,255,.35);" aria-hidden="true"></i>
          </div>`;
 
-    const desc = this.description
-      ? `<p style="font-size:0.82rem;color:var(--text-muted);line-height:1.65;
-                   margin:10px 0;display:-webkit-box;-webkit-box-orient:vertical;
+    const platformTags = this.platforms
+      .map(p => `<span class="game-tag">${p}</span>`)
+      .join('');
+
+    const releasedHtml = this.released
+      ? `<span style="color:var(--text-muted);font-size:0.78rem;display:block;margin-top:6px;">
+           Released: ${this.released}
+         </span>`
+      : '';
+
+    const descHtml = this.description
+      ? `<p style="font-size:0.82rem;color:var(--text-muted);line-height:1.65;margin:10px 0;
+                   display:-webkit-box;-webkit-box-orient:vertical;
                    -webkit-line-clamp:3;overflow:hidden;">
            ${this.description}
          </p>`
@@ -74,12 +101,10 @@ class GameCard {
       <div class="game-card">
         <div class="game-thumb">${thumbHtml}</div>
         <div class="game-card-body">
-          <div class="game-tags">
-            <span class="game-tag">GTA Series</span>
-            <span class="game-tag">Wikipedia</span>
-          </div>
+          <div class="game-tags">${platformTags}</div>
           <h4>${this.name}</h4>
-          ${desc}
+          ${releasedHtml}
+          ${descHtml}
           <a href="${this.url}" target="_blank" rel="noopener"
              style="color:var(--cyan);font-size:0.78rem;display:inline-block;margin-top:4px;">
             Read on Wikipedia ↗
@@ -92,69 +117,56 @@ class GameCard {
 
 /* ─────────────────────────────────────────────────────────────
    ApiManager
-   Uses Wikipedia's generator=search action with prop=pageimages
-   and prop=extracts to fetch cover art + descriptions in one
-   request, with no API key and no CORS preflight.
-
-   Pagination: offset-based (gsroffset).  We convert the
-   internal 0-based page index to byte offset = page × PAGE_SIZE.
+   Fetches Wikipedia descriptions + thumbnails for each entry
+   in GTA_GAMES using the titles= parameter (no search needed,
+   no custom headers, no CORS issue, no API key).
+   All 14 titles are loaded in a single request and cached —
+   pagination and filtering are handled client-side.
    ───────────────────────────────────────────────────────────── */
 class ApiManager {
   constructor() {
-    this.currentPage = 0;
-    this.hasMore     = true;
-    this.hasPrevious = false;
+    this._cache = null;   // populated on first fetch, reused after
   }
 
-  async fetchGames(query = SEARCH_TERM, page = 0) {
-    const offset = page * PAGE_SIZE;
+  async fetchAllGames() {
+    if (this._cache) return this._cache;
 
+    const titles = GTA_GAMES.map(g => g.title).join('|');
     const params = new URLSearchParams({
-      action:       'query',
-      generator:    'search',
-      gsrsearch:    query,          // e.g. "Grand Theft Auto"
-      gsrlimit:     PAGE_SIZE,
-      gsroffset:    offset,
-      prop:         'pageimages|extracts',
-      exintro:      '1',            // only the intro paragraph
-      exsentences:  '2',            // limit to 2 sentences
-      pithumbsize:  '400',          // thumbnail width in px
-      format:       'json',
-      origin:       '*',            // ← enables CORS from any domain
+      action:      'query',
+      titles:      titles,
+      prop:        'pageimages|extracts',
+      exintro:     '1',
+      exsentences: '2',
+      pithumbsize: '400',
+      format:      'json',
+      origin:      '*',   // ← enables CORS from any domain, no preflight
     });
 
     const response = await fetch(`${BASE_URL}?${params}`);
-
     if (!response.ok) {
       throw new Error(`Wikipedia API error ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data  = await response.json();
+    const pages = data.query?.pages || {};
 
-    if (!data.query?.pages) {
-      this.hasMore     = false;
-      this.hasPrevious = page > 0;
-      this.currentPage = page;
-      return [];
-    }
+    /* Match Wikipedia pages back to our ordered GTA_GAMES list */
+    this._cache = GTA_GAMES.map(game => {
+      const wikiPage = Object.values(pages).find(
+        p => p.title.toLowerCase() === game.title.toLowerCase()
+      ) || { title: game.title };
+      return new GameCard(wikiPage, game);
+    });
 
-    /* Pages come back as an object keyed by pageid;
-       sort by index to preserve search-ranking order */
-    const results = Object.values(data.query.pages)
-      .sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
-
-    this.hasMore     = !!data.continue;   // Wikipedia sets .continue when more pages exist
-    this.hasPrevious = page > 0;
-    this.currentPage = page;
-
-    return results.map(p => new GameCard(p));
+    return this._cache;
   }
 }
 
 /* ─────────────────────────────────────────────────────────────
    SearchFilter
-   Client-side search, sort, and platform filter applied
-   to the current page of API results.
+   Client-side search, platform filter, and sort applied to ALL
+   14 GTA game cards loaded upfront.
    ───────────────────────────────────────────────────────────── */
 class SearchFilter {
   constructor(games) {
@@ -173,32 +185,26 @@ class SearchFilter {
   apply() {
     let result = [...this.allGames];
 
-    /* Text search on title */
+    /* Title search */
     if (this.query) {
       result = result.filter(g =>
         g.name.toLowerCase().includes(this.query)
       );
     }
 
-    /* Platform filter — gracefully ignored for Wikipedia results */
+    /* Platform filter — g.platforms is now populated from GTA_GAMES */
     if (this.platform) {
       result = result.filter(g =>
-        g.platform.toLowerCase().includes(this.platform) ||
         g.platforms.some(p => p.toLowerCase().includes(this.platform))
       );
     }
 
     /* Sort */
-    switch (this.sort) {
-      case 'rating':
-        /* Wikipedia has no score — sort by name alphabetically */
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name':
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      default:
-        break;
+    if (this.sort === 'name') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (this.sort === 'rating') {
+      /* No score data — sort by release year */
+      result.sort((a, b) => (a.released || '').localeCompare(b.released || ''));
     }
 
     return result;
@@ -207,19 +213,16 @@ class SearchFilter {
 
 /* ─────────────────────────────────────────────────────────────
    MediaPage
-   Orchestrates the full media page:
-     · loading / error / empty states
-     · API fetch + render on page change
-     · client-side search, sort, platform filter
-     · pagination (prev / next using API page parameter)
+   · One-time fetch of all 14 GTA games from Wikipedia
+   · All search / sort / platform filtering done client-side
+   · Pagination done client-side — no extra API calls
    ───────────────────────────────────────────────────────────── */
 class MediaPage {
   constructor() {
     this.api         = new ApiManager();
     this.filter      = null;
-    this.apiPage     = 0;          // current API page (0-indexed)
+    this.displayPage = 0;   // client-side page (0-indexed)
 
-    /* DOM references */
     this._el = {
       loading:    document.getElementById('apiLoading'),
       error:      document.getElementById('apiError'),
@@ -241,43 +244,68 @@ class MediaPage {
     this._bindEvents();
   }
 
-  /* ── Event listeners ───────────────────────────────────────── */
   _bindEvents() {
     let debounce;
     this._el.search?.addEventListener('input', () => {
       clearTimeout(debounce);
-      debounce = setTimeout(() => this._applyClientFilter(), 380);
+      debounce = setTimeout(() => {
+        this.displayPage = 0;
+        this._applyClientFilter();
+      }, 380);
     });
 
-    this._el.sort?.addEventListener('change',     () => this._applyClientFilter());
-    this._el.platform?.addEventListener('change', () => this._applyClientFilter());
+    this._el.sort?.addEventListener('change', () => {
+      this.displayPage = 0;
+      this._applyClientFilter();
+    });
+    this._el.platform?.addEventListener('change', () => {
+      this.displayPage = 0;
+      this._applyClientFilter();
+    });
 
-    this._el.retry?.addEventListener('click',  () => this._load(this.apiPage));
-    this._el.prevBtn?.addEventListener('click', () => this._load(Math.max(0, this.apiPage - 1)));
-    this._el.nextBtn?.addEventListener('click', () => this._load(this.apiPage + 1));
+    this._el.retry?.addEventListener('click', () => this._load());
+
+    this._el.prevBtn?.addEventListener('click', () => {
+      if (this.displayPage > 0) { this.displayPage--; this._applyClientFilter(); }
+    });
+    this._el.nextBtn?.addEventListener('click', () => {
+      this.displayPage++;
+      this._applyClientFilter();
+    });
   }
 
-  /* ── Client-side filter (no extra API call) ─────────────────── */
+  /* Filter + paginate all 14 games client-side */
   _applyClientFilter() {
     if (!this.filter) return;
+
     this.filter.update({
       query:    this._el.search?.value   ?? '',
       sort:     this._el.sort?.value     ?? '',
       platform: this._el.platform?.value ?? '',
     });
-    this._renderCards(this.filter.apply());
+
+    const allFiltered = this.filter.apply();
+    const start       = this.displayPage * PAGE_SIZE;
+    const slice       = allFiltered.slice(start, start + PAGE_SIZE);
+    const hasMore     = (start + PAGE_SIZE) < allFiltered.length;
+
+    if (this._el.indicator) {
+      this._el.indicator.textContent = `Page ${this.displayPage + 1}`;
+    }
+    if (this._el.prevBtn) this._el.prevBtn.disabled = this.displayPage === 0;
+    if (this._el.nextBtn) this._el.nextBtn.disabled = !hasMore;
+
+    this._renderCards(slice, allFiltered.length);
   }
 
-  /* ── UI state machine ───────────────────────────────────────── */
   _setState(state) {
     const { loading, error, empty, grid, resultsBar, pagination } = this._el;
-
     loading?.classList.add('hidden');
     error?.classList.add('hidden');
     empty?.classList.add('hidden');
-    grid?.classList.remove('hidden');
     resultsBar?.classList.add('hidden');
     pagination?.classList.add('hidden');
+    grid?.classList.remove('hidden');
 
     switch (state) {
       case 'loading':
@@ -293,79 +321,42 @@ class MediaPage {
         grid?.classList.add('hidden');
         break;
       case 'success':
-        grid?.classList.remove('hidden');
         resultsBar?.classList.remove('hidden');
         pagination?.classList.remove('hidden');
         break;
     }
   }
 
-  /* ── Render game cards into the grid ───────────────────────── */
-  _renderCards(games) {
-    if (!games.length) {
-      this._setState('empty');
-      return;
-    }
+  _renderCards(games, total) {
+    if (!games.length) { this._setState('empty'); return; }
     this._setState('success');
 
     if (this._el.grid) {
       this._el.grid.innerHTML = games.map(g => g.render()).join('');
     }
     if (this._el.resultsCnt) {
+      const of = total != null && total !== games.length ? ` of ${total}` : '';
       this._el.resultsCnt.textContent =
-        `Showing ${games.length} result${games.length !== 1 ? 's' : ''}`;
+        `Showing ${games.length}${of} result${total !== 1 ? 's' : ''}`;
     }
-
     new ScrollReveal('.game-card');
   }
 
-  /* ── Pagination controls ────────────────────────────────────── */
-  _updatePagination() {
-    if (this._el.indicator) {
-      this._el.indicator.textContent = `Page ${this.apiPage + 1}`;
-    }
-    if (this._el.prevBtn) this._el.prevBtn.disabled = !this.api.hasPrevious;
-    if (this._el.nextBtn) this._el.nextBtn.disabled = !this.api.hasMore;
-  }
-
-  /* ── Fetch one API page ─────────────────────────────────────── */
-  async _load(page = 0) {
-    if (page < 0) return;
-    this.apiPage = page;
+  async _load() {
     this._setState('loading');
-
     try {
-      const games = await this.api.fetchGames(SEARCH_TERM, page);
-
-      if (!games.length && page === 0) {
-        /* No results at all */
-        this._setState('empty');
-        return;
-      }
-
-      if (!games.length) {
-        /* We went past the last page — back up one */
-        this.apiPage = Math.max(0, page - 1);
-        this._updatePagination();
-        return;
-      }
-
+      const games = await this.api.fetchAllGames();
+      if (!games.length) { this._setState('empty'); return; }
       this.filter = new SearchFilter(games);
-      this._renderCards(games);
-      this._updatePagination();
-
+      this._applyClientFilter();
     } catch (err) {
       console.error('[MediaPage] fetch error:', err);
       this._setState('error');
-      if (this._el.errorMsg) {
-        this._el.errorMsg.textContent = err.message;
-      }
+      if (this._el.errorMsg) this._el.errorMsg.textContent = err.message;
     }
   }
 
-  init() {
-    this._load(0);
-  }
+  init() { this._load(); }
 }
 
 /* ─────────────────────────────────────────────────────────────
