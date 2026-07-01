@@ -138,6 +138,10 @@ class ApiManager {
       exintro:     '1',
       exsentences: '2',
       pithumbsize: '400',
+      pilicense:   'any',   // ← include non-free (fair-use) box art too — otherwise
+                             //    Wikipedia only returns freely-licensed images, which
+                             //    is why current titles like GTA Online / GTA VI (whose
+                             //    only cover art is non-free) fell back to the gradient
       format:      'json',
       origin:      '*',   // ← enables CORS from any domain, no preflight
     });

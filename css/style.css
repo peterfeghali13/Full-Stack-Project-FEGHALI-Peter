@@ -1217,7 +1217,13 @@ ul { list-style: none; padding: 0; margin: 0; }
 
   .api-controls    { flex-direction: column; }
   .filter-controls { flex-direction: column; }
-  .api-select      { width: 100%; }
+  .api-select      {
+    width: 100%;
+    flex: 0 0 auto;   /* override desktop's "flex: 1 1 160px" — in a column
+                         container that basis is read as a HEIGHT, which is
+                         what was stretching the two selects unevenly */
+    height: 48px;
+  }
   .search-box      { width: 100%; }
 
   .features-grid .feature-card { max-width: 100%; }
