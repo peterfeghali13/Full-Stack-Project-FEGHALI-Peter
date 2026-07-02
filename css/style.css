@@ -982,19 +982,41 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 /* ── 18. GAMES GRID ─────────────────────────────────────────── */
+/* Games grid — fixed 3-column table (2 rows for a full 6-item page) */
 .games-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 22px;
 }
 
 /* Anchor wrapper that makes the whole card clickable */
 .game-card-link {
-  flex: 1 1 280px;
-  max-width: 360px;
   text-decoration: none;
   color: inherit;
-  display: flex;   /* so the inner card stretches to full height */
+  display: flex;   /* so the inner card stretches to fill the grid cell's full height */
+}
+
+/* Last (partial) page — remaining cards stretch to fill the empty grid space
+   instead of sitting small in a corner */
+.games-grid[data-count="2"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+.games-grid[data-count="2"] .game-thumb {
+  height: 340px;
+}
+.games-grid[data-count="2"] .game-card-body {
+  padding: 26px 28px 28px;
+}
+.games-grid[data-count="2"] .game-card-body h4 {
+  font-size: 1.55rem;
+  margin-bottom: 14px;
+}
+
+.games-grid[data-count="1"] {
+  grid-template-columns: 1fr;
+}
+.games-grid[data-count="1"] .game-thumb {
+  height: 400px;
 }
 
 .game-card {
@@ -1191,6 +1213,9 @@ ul { list-style: none; padding: 0; margin: 0; }
 @media (max-width: 992px) {
   .gallery-item { flex: 1 1 calc(50% - 10px); }   /* 2-col gallery */
 
+  .games-grid { grid-template-columns: repeat(2, 1fr); }   /* 2-col games table */
+  .games-grid[data-count="2"] .game-thumb { height: 280px; }
+
   .timeline-wrap::before { left: 20px; }
   .timeline-event,
   .timeline-event:nth-child(even) { flex-direction: column; }
@@ -1214,6 +1239,14 @@ ul { list-style: none; padding: 0; margin: 0; }
   .btn-outline-custom { width: 100%; max-width: 280px; justify-content: center; }
 
   .gallery-item { flex: 1 1 100%; }   /* 1-col gallery on mobile */
+
+  .games-grid,
+  .games-grid[data-count="2"],
+  .games-grid[data-count="1"] { grid-template-columns: 1fr; }   /* 1-col games table on mobile */
+  .games-grid[data-count="2"] .game-thumb,
+  .games-grid[data-count="1"] .game-thumb { height: 220px; }
+  .games-grid[data-count="2"] .game-card-body { padding: 18px 20px 20px; }
+  .games-grid[data-count="2"] .game-card-body h4 { font-size: 1.2rem; margin-bottom: 10px; }
 
   .api-controls    { flex-direction: column; }
   .filter-controls { flex-direction: column; }
@@ -1248,7 +1281,6 @@ ul { list-style: none; padding: 0; margin: 0; }
 
   .character-card { flex: 1 1 100%; max-width: 100%; }
   .location-card  { flex: 1 1 100%; }
-  .game-card      { flex: 1 1 100%; max-width: 100%; }
 
   .section-title { font-size: clamp(1.8rem, 8vw, 2.4rem); }
 }

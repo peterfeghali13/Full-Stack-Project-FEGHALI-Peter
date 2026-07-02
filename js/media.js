@@ -2,7 +2,7 @@
 
 /* ── API CONFIGURATION ──────────────────────────────────────── */
 const BASE_URL  = 'https://en.wikipedia.org/w/api.php';
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 6;
 
 /* ── HARDCODED GTA GAME LIST ────────────────────────────────── */
 /*
@@ -20,12 +20,12 @@ const GTA_GAMES = [
   { title: 'Grand Theft Auto: Liberty City Stories',   platforms: ['PlayStation'],                                    released: '2005' },
   { title: 'Grand Theft Auto: Vice City Stories',      platforms: ['PlayStation'],                                    released: '2006' },
   { title: 'Grand Theft Auto IV',                      platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2008' },
-  { title: 'Grand Theft Auto: The Lost and Damned',    platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2009' },
+  { title: 'Grand Theft Auto IV: The Lost and Damned', platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2009' },
   { title: 'Grand Theft Auto: The Ballad of Gay Tony', platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2009' },
   { title: 'Grand Theft Auto: Chinatown Wars',         platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch'],   released: '2009' },
   { title: 'Grand Theft Auto V',                       platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2013' },
   { title: 'Grand Theft Auto Online',                  platforms: ['PC', 'PlayStation', 'Xbox'],                      released: '2013' },
-  { title: 'Grand Theft Auto VI',                      platforms: ['PlayStation', 'Xbox'],                            released: '2025' },
+  { title: 'Grand Theft Auto VI',                      platforms: ['PlayStation', 'Xbox'],                            released: '2026', releaseLabel: 'Releasing soon — November 19th, 2026' },
 ];
 
 /* ─────────────────────────────────────────────────────────────
@@ -43,9 +43,11 @@ class GameCard {
       : `https://en.wikipedia.org/wiki/${encodeURIComponent(gameEntry.title)}`;
 
     /* Platform data comes from the hardcoded list — always populated */
-    this.platforms = gameEntry.platforms || [];
-    this.platform  = this.platforms.join(', ');
-    this.released  = gameEntry.released  || '';
+    this.platforms   = gameEntry.platforms || [];
+    this.platform    = this.platforms.join(', ');
+    this.releaseYear = gameEntry.released     || '';   // raw year, used for sorting
+    this.released    = gameEntry.releaseLabel || gameEntry.released || ''; // shown on the card
+    this.isCustomReleaseLabel = Boolean(gameEntry.releaseLabel);
 
     /* Kept for SearchFilter compatibility */
     this.genre = '';
@@ -85,7 +87,7 @@ class GameCard {
 
     const releasedHtml = this.released
       ? `<span style="color:var(--text-muted);font-size:0.78rem;display:block;margin-top:6px;">
-           Released: ${this.released}
+           ${this.isCustomReleaseLabel ? this.released : `Released: ${this.released}`}
          </span>`
       : '';
 
@@ -142,6 +144,8 @@ class ApiManager {
                              //    Wikipedia only returns freely-licensed images, which
                              //    is why current titles like GTA Online / GTA VI (whose
                              //    only cover art is non-free) fell back to the gradient
+      redirects:   '1',     // ← auto-resolve if a title is a redirect to the real
+                             //    article, instead of silently returning nothing
       format:      'json',
       origin:      '*',   // ← enables CORS from any domain, no preflight
     });
@@ -207,7 +211,7 @@ class SearchFilter {
       result.sort((a, b) => a.name.localeCompare(b.name));
     } else if (this.sort === 'rating') {
       /* No score data — sort by release year */
-      result.sort((a, b) => (a.released || '').localeCompare(b.released || ''));
+      result.sort((a, b) => (a.releaseYear || '').localeCompare(b.releaseYear || ''));
     }
 
     return result;
@@ -336,6 +340,7 @@ class MediaPage {
 
     if (this._el.grid) {
       this._el.grid.innerHTML = games.map(g => g.render()).join('');
+      this._el.grid.dataset.count = games.length < 3 ? String(games.length) : 'full';
     }
     if (this._el.resultsCnt) {
       const of = total != null && total !== games.length ? ` of ${total}` : '';
